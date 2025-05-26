@@ -26,7 +26,7 @@
 
 1. Клонируйте репозиторий:
     ```bash
-    git clone https://github.com/yourorg/ielts-platform.git
+    git clone https://github.com/shahob-atm/ielts-platform.git
     ```
 2. Перейдите в папку проекта и настройте переменные окружения (например, параметры базы данных).
 3. Запустите backend-приложение:
