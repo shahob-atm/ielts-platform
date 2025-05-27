@@ -1,3 +1,32 @@
 spring:
   application:
     name: ielts-platform
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/ielts_platform_db
+    username: postgres
+    password: root
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+  mail:
+    host: sandbox.smtp.mailtrap.io
+    port: 587
+    username: 83f9431df650c0
+    password: da8f31136b8c64
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+jwt:
+  secret: >-
+    6110bb52448dca8cb98d8213427f5dfa5bac6eee82b04960ac97f8ecd55370db7e792e7c3971e8a9363a2cb00f0869d6a79058e4be2aebbc8a77e1b4b67663ca134408aad74676c4823881f7eace610d123d53575645f5b77e2e56eb083501ecb6e0f41b852135c0e7285b90295402003894b39c75fb127e76d4cbae60d71ac3fad55225739036089ef04785c5d24143a722638a21ac6e11dec1bb61c8affb4152fa6f67b58e70f8536f3342969f84b0b62702182971913d06fa7677c9f2deeb60867b0f2d367f4db7b8c189bd7aea5939bb62304f1b3a0a835bc18392319248493ac05d03a571b9add3ec286da4b765ed1b71c5314f3ca5548721b91dddda4f
+  expiration: 900000
+  refreshExpiration: 604800000
+
+server:
+  port: 8080
