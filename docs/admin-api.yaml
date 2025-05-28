@@ -1,0 +1,134 @@
+openapi: 3.0.1
+info:
+  title: Ielts platform System API
+  version: "1.0"
+  description: REST API for Ielts platform
+
+tags:
+  - name: Admin
+
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /api/auth/login:
+    post:
+      tags:
+        - Admin
+      summary: User Login
+      description: Authenticates the user by email and password. Returns access and refresh tokens on success.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Invalid login request
+        '401':
+          description: Invalid email or password
+
+  /api/users/invite:
+    post:
+      tags:
+        - Admin
+      summary: Invite User
+      description: Allows an admin to invite a new user (student, teacher, etc.) by email. Sends an activation link to the specified email address.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InviteUserRequest'
+      responses:
+        '200':
+          description: Invitation sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '400':
+          description: Invalid request or user already exists
+        '403':
+          description: Forbidden (only accessible by admins)
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          description: User email
+          example: johndoe@gmail.com
+        password:
+          type: string
+          description: User password
+          example: 123456
+      required:
+        - email
+        - password
+
+    LoginResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          description: JWT access token
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        refreshToken:
+          type: string
+          description: JWT refresh token
+          example: dGhpcyBpcyBhIHJlZnJlc2ggdG9rZW4=
+      required:
+        - accessToken
+        - refreshToken
+
+    InviteUserRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+          description: User's first name
+          example: Ali
+        lastName:
+          type: string
+          description: User's last name
+          example: Doyi
+        email:
+          type: string
+          description: User's email address
+          example: ali@gmail.com
+        role:
+          type: string
+          description: Role of the new user (e.g., STUDENT, TEACHER)
+          example: STUDENT
+      required:
+        - firstName
+        - lastName
+        - email
+        - role
+
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Invitation sent successfully.
+      required:
+        - message
+
+security:
+  - BearerAuth: []

@@ -123,6 +123,15 @@
                 </configuration>
             </plugin>
         </plugins>
+        <resources>
+            <resource>
+                <directory>docs</directory>
+                <includes>
+                    <include>**/*.yaml</include>
+                </includes>
+                <targetPath>static/docs</targetPath>
+            </resource>
+        </resources>
     </build>
 
 </project>

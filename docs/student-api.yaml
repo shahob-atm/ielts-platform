@@ -1,0 +1,123 @@
+openapi: 3.0.1
+info:
+  title: Ielts platform System API
+  version: "1.0"
+  description: REST API for Ielts platform
+
+tags:
+  - name: Student
+
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /api/auth/login:
+    post:
+      tags:
+        - Student
+      summary: User Login
+      description: Authenticates the user by email and password. Returns access and refresh tokens on success.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Invalid login request
+        '401':
+          description: Invalid email or password
+
+  /api/auth/activate:
+    post:
+      tags:
+        - Student
+      summary: Activate Account
+      description: Activates a user account using an activation token and sets a new password.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActivateRequest'
+      responses:
+        '200':
+          description: Account successfully activated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '400':
+          description: Invalid activation request or token
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          description: User email
+          example: user@example.com
+        password:
+          type: string
+          description: User password
+          example: 123456
+      required:
+        - email
+        - password
+
+    LoginResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          description: JWT access token
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        refreshToken:
+          type: string
+          description: JWT refresh token
+          example: dGhpcyBpcyBhIHJlZnJlc2ggdG9rZW4=
+      required:
+        - accessToken
+        - refreshToken
+
+    ActivateRequest:
+      type: object
+      properties:
+        token:
+          type: string
+          description: Activation token
+          example: 123abc
+        password:
+          type: string
+          description: New user password
+          example: myStrongPassword!
+      required:
+        - token
+        - password
+
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Response message
+          example: Account activated successfully.
+      required:
+        - message
+
+security:
+  - BearerAuth: []
