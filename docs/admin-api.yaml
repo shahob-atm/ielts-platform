@@ -11,7 +11,7 @@ servers:
   - url: http://localhost:8080
 
 paths:
-  /api/auth/login:
+  /api/v1/auth/login:
     post:
       tags:
         - Admin
@@ -35,7 +35,7 @@ paths:
         '401':
           description: Invalid email or password
 
-  /api/users/invite:
+  /api/v1/users/invite:
     post:
       tags:
         - Admin

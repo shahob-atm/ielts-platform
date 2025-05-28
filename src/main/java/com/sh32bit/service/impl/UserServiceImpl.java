@@ -2,8 +2,13 @@ package com.sh32bit.service.impl;
 
 import com.sh32bit.dto.request.InviteUserRequest;
 import com.sh32bit.dto.response.MessageResponse;
+import com.sh32bit.entity.StudentProfile;
+import com.sh32bit.entity.TeacherProfile;
 import com.sh32bit.entity.User;
+import com.sh32bit.enums.Role;
 import com.sh32bit.exception.EmailAlreadyExistsException;
+import com.sh32bit.repository.StudentProfileRepository;
+import com.sh32bit.repository.TeacherProfileRepository;
 import com.sh32bit.repository.UserRepository;
 import com.sh32bit.service.EmailService;
 import com.sh32bit.service.UserService;
@@ -19,6 +24,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final StudentProfileRepository studentProfileRepository;
+    private final TeacherProfileRepository teacherProfileRepository;
     private final EmailService emailService;
 
     @Override
@@ -41,6 +48,24 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         userRepository.save(user);
+
+        if (user.getRole().equals(Role.STUDENT)) {
+            StudentProfile studentProfile = StudentProfile.builder()
+                    .userId(user.getId())
+                    .user(user)
+                    .build();
+
+            studentProfileRepository.save(studentProfile);
+        }
+
+        if (user.getRole().equals(Role.TEACHER)) {
+            TeacherProfile teacherProfile = TeacherProfile.builder()
+                    .userId(user.getId())
+                    .user(user)
+                    .build();
+
+            teacherProfileRepository.save(teacherProfile);
+        }
 
         String activationLink = "http://localhost:8080/activate?token=" + token;
         emailService.send(
