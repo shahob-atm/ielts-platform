@@ -51,7 +51,6 @@ public class UserServiceImpl implements UserService {
 
         if (user.getRole().equals(Role.STUDENT)) {
             StudentProfile studentProfile = StudentProfile.builder()
-                    .userId(user.getId())
                     .user(user)
                     .build();
 
@@ -60,7 +59,6 @@ public class UserServiceImpl implements UserService {
 
         if (user.getRole().equals(Role.TEACHER)) {
             TeacherProfile teacherProfile = TeacherProfile.builder()
-                    .userId(user.getId())
                     .user(user)
                     .build();
 

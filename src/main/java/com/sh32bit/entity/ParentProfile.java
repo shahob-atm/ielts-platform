@@ -15,11 +15,11 @@ import java.util.Set;
 @Table(name = "parent_profiles")
 public class ParentProfile {
     @Id
-    private Long userId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @OneToOne
-    @MapsId
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", unique = true)
     private User user;
 
     @ManyToMany

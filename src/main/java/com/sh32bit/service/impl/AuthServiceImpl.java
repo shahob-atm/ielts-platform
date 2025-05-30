@@ -100,7 +100,6 @@ public class AuthServiceImpl implements AuthService {
         userRepository.save(user);
 
         ParentProfile parentProfile = ParentProfile.builder()
-                .userId(user.getId())
                 .user(user)
                 .build();
 

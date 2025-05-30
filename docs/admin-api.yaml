@@ -59,6 +59,72 @@ paths:
         '403':
           description: Forbidden (only accessible by admins)
 
+  /api/v1/auth/register-parent:
+    post:
+      tags:
+        - Admin
+      summary: Register a new parent
+      description: Registers a new parent user account. All fields are required.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParentRegistrationRequest'
+      responses:
+        '200':
+          description: Parent registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '400':
+          description: Invalid input data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/auth/parent-activate:
+    get:
+      tags:
+        - Admin
+      summary: Activate parent account
+      description: Activate parent account using activation token sent to email.
+      parameters:
+        - name: token
+          in: query
+          required: true
+          description: Activation token sent to parent's email
+          schema:
+            type: string
+            example: abc123def456
+      responses:
+        '200':
+          description: Parent account activated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '400':
+          description: Invalid or expired token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
   securitySchemes:
     BearerAuth:
@@ -129,6 +195,40 @@ components:
           example: Invitation sent successfully.
       required:
         - message
+
+    ParentRegistrationRequest:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - email
+        - password
+      properties:
+        firstName:
+          type: string
+          example: Ali
+          description: First name
+        lastName:
+          type: string
+          example: Valiyev
+          description: Last name
+        email:
+          type: string
+          format: email
+          example: ali@example.com
+          description: Email address
+        password:
+          type: string
+          example: StrongPassword123
+          description: Password
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Validation failed
+          description: Error message
 
 security:
   - BearerAuth: []

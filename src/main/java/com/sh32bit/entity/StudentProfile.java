@@ -12,10 +12,10 @@ import lombok.*;
 @Table(name = "student_profiles")
 public class StudentProfile {
     @Id
-    private Long userId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @OneToOne
-    @MapsId
     @JoinColumn(name = "user_id")
     private User user;
 
