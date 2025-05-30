@@ -1,55 +1,55 @@
 # IELTS Platform
 
-## О проекте
+## About the Project
 
-**IELTS Platform** — это современная и удобная онлайн-система для управления учебным процессом, тестированием, а также автоматизации работы языковых центров, специализирующихся на подготовке к экзамену IELTS. Платформа позволяет эффективно организовать взаимодействие между администрацией, преподавателями, студентами и их родителями.
+**IELTS Platform** is a modern, user-friendly online system for managing the educational process, conducting tests, and automating the workflow of language centers specializing in IELTS exam preparation. The platform enables efficient collaboration between administrators, teachers, students, and their parents.
 
-## Основные функции
+## Key Features
 
-- **Регистрация и управление пользователями:** поддержка ролей Admin, Teacher, Student и Parent.
-- **Назначение и управление группами:** создание и редактирование учебных групп, назначение преподавателей и студентов.
-- **Проведение тестов и экзаменов IELTS:** онлайн-платформа для сдачи тестов, автоматическая оценка и статистика результатов.
-- **Ведение расписания:** планирование уроков и экзаменов.
-- **Отчёты по посещаемости и успеваемости:** подробная аналитика для администраторов, преподавателей и родителей.
-- **Обратная связь и уведомления:** система оповещений и сообщений для всех ролей.
-- **Оплата обучения:** возможность онлайн-оплаты курсов (при необходимости).
+- **User Registration and Management:** Supports roles such as Admin, Teacher, Student, and Parent.
+- **Group Assignment and Management:** Create and edit study groups, assign teachers and students.
+- **IELTS Test Administration:** Online platform for taking IELTS tests, automatic grading, and performance statistics.
+- **Scheduling:** Plan lessons and exams seamlessly.
+- **Attendance and Progress Reports:** Detailed analytics for administrators, teachers, and parents.
+- **Feedback and Notifications:** Notification and messaging system for all roles.
+- **Tuition Payment:** Option for online payment of courses (if needed).
 
-## Архитектура
+## Architecture
 
-Платформа построена по принципу клиент-серверной архитектуры:
+The platform follows a client-server architecture:
 - **Backend:** Spring Boot (Java)
-- **Frontend:** (опционально) React/Vue/Angular
-- **База данных:** PostgreSQL или MySQL
-- **Email/SMS уведомления:** интеграция с внешними сервисами (SendGrid, Twilio и др.)
+- **Frontend:** (optional) React/Vue/Angular
+- **Database:** PostgreSQL or MySQL
+- **Email/SMS Notifications:** Integration with external services (e.g., SendGrid, Twilio, etc.)
 
-## Запуск проекта
+## Getting Started
 
-1. Клонируйте репозиторий:
+1. Clone the repository:
     ```bash
     git clone https://github.com/shahob-atm/ielts-platform.git
     ```
-2. Перейдите в папку проекта и настройте переменные окружения (например, параметры базы данных).
-3. Запустите backend-приложение:
+2. Navigate to the project folder and configure environment variables (e.g., database parameters).
+3. Run the backend application:
     ```bash
     ./mvnw spring-boot:run
     ```
-4. (Опционально) Запустите frontend, если используется.
+4. (Optional) Start the frontend if you are using one.
 
-## Пользовательские роли
+## User Roles
 
-- **Администратор:** управляет пользователями, группами, расписанием, проверяет регистрацию новых преподавателей и студентов, отправляет приглашения.
-- **Преподаватель:** ведёт уроки, проводит тесты, выставляет оценки, может общаться со студентами.
-- **Студент:** проходит тесты, отслеживает расписание, получает оценки и уведомления.
-- **Родитель:** имеет доступ к информации о результатах и посещаемости своих детей, может оплачивать обучение.
+- **Administrator:** Manages users, groups, schedules; approves new teachers and students; sends invitations.
+- **Teacher:** Conducts lessons and tests, assigns grades, communicates with students.
+- **Student:** Takes tests, tracks schedule, receives grades and notifications.
+- **Parent:** Has access to their child’s results and attendance, can pay tuition.
 
-## Безопасность
+## Security
 
-- Регистрация пользователей проходит только через приглашения от администратора (email или SMS).
-- Все пароли хранятся в зашифрованном виде (bcrypt).
-- JWT-аутентификация для API.
-- Валидация данных и контроль доступа по ролям.
+- User registration is by invitation only from the administrator (via email or SMS).
+- All passwords are stored in encrypted form (bcrypt).
+- JWT authentication is used for the API.
+- Data validation and role-based access control are enforced.
 
-## Технологии
+## Technologies
 
 - Java 17+
 - Spring Boot
@@ -57,11 +57,11 @@
 - JPA/Hibernate
 - PostgreSQL/MySQL
 - Lombok
-- Swagger/OpenAPI (документация)
-- Email/SMS-интеграция
+- Swagger/OpenAPI (documentation)
+- Email/SMS integration
+
 ---
 
-> ⚠️ **Внимание: данный проект находится в активной разработке. Возможны существенные изменения в функциональности и 
-> архитектуре. Используйте только для ознакомления или тестирования.**
+> ⚠️ **Note: This project is under active development. Major changes in functionality and architecture are possible. Use for familiarization or testing purposes only.**
 
-**IELTS Platform** — ваш надёжный инструмент для эффективной подготовки к IELTS!
+**IELTS Platform** — your reliable tool for efficient IELTS preparation!
