@@ -1,0 +1,204 @@
+openapi: 3.0.1
+info:
+  title: Ielts platform System API
+  version: "1.0"
+  description: REST API for Ielts platform
+
+tags:
+  - name: Parent
+
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /api/v1/auth/login:
+    post:
+      tags:
+        - Parent
+      summary: User Login
+      description: Authenticates the user by email and password. Returns access and refresh tokens on success.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Successfully logged in
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Invalid login request
+        '401':
+          description: Invalid email or password
+
+  /api/v1/auth/register-parent:
+    post:
+      tags:
+        - Parent
+      summary: "Register parent"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParentRegistrationRequest'
+      responses:
+        '200':
+          description: "Parent registered successfully"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParentRegisterResponse'
+        '400':
+          description: "Validation error"
+
+  /api/v1/auth/parent-activate:
+    get:
+      tags:
+        - Parent
+      summary: "Activate parent account"
+      parameters:
+        - name: token
+          in: query
+          required: true
+          description: Activation token sent to parent's email
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Parent activated successfully"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParentActivateResponse'
+        '400':
+          description: "Invalid or expired token"
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          description: User email
+          example: johndoe@gmail.com
+        password:
+          type: string
+          description: User password
+          example: 123456
+      required:
+        - email
+        - password
+
+    ParentRegistrationRequest:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - email
+        - password
+      properties:
+        firstName:
+          type: string
+          description: Parent's first name
+          example: Dilshod
+        lastName:
+          type: string
+          description: Parent's last name
+          example: Jo'rayev
+        email:
+          type: string
+          format: email
+          description: Parent's email address
+          example: dilshod@gmail.com
+        password:
+          type: string
+          description: Parent's password
+          example: 1234567
+
+    ParentRegisterResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Success status
+        message:
+          type: string
+          description: Response message
+          example: Parent registered successfully
+        data:
+          type: object
+          properties:
+            message:
+              type: string
+              example: Parent registered successfully
+          required:
+            - message
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp
+
+    ParentActivateResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Indicates if request was successful
+          example: true
+        message:
+          type: string
+          description: Main response message
+          example: Parent activated successfully
+        data:
+          type: object
+          properties:
+            message:
+              type: string
+              example: Parent activated successfully
+        timestamp:
+          type: string
+          format: date-time
+          description: Time the response was generated
+
+    LoginResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Success status
+        message:
+          type: string
+          description: Response message
+          example: Successfully logged in
+        data:
+          type: object
+          properties:
+            accessToken:
+              type: string
+              description: JWT access token
+              example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+            refreshToken:
+              type: string
+              description: JWT refresh token
+              example: dGhpcyBpcyBhIHJlZnJlc2ggdG9rZW4=
+          required:
+            - accessToken
+            - refreshToken
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp
+
+security:
+  - BearerAuth: []

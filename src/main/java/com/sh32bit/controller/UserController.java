@@ -1,6 +1,7 @@
 package com.sh32bit.controller;
 
 import com.sh32bit.dto.request.InviteUserRequest;
+import com.sh32bit.dto.response.ApiResponse;
 import com.sh32bit.dto.response.MessageResponse;
 import com.sh32bit.service.UserService;
 import jakarta.mail.MessagingException;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
+
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
@@ -20,8 +23,15 @@ public class UserController {
 
     @PostMapping("/invite")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public ResponseEntity<MessageResponse> inviteUser(@RequestBody InviteUserRequest req)
+    public ResponseEntity<ApiResponse<MessageResponse>> inviteUser(@RequestBody InviteUserRequest req)
             throws MessagingException {
-        return ResponseEntity.ok(userService.inviteUser(req));
+        MessageResponse result = userService.inviteUser(req);
+
+        return ResponseEntity.ok(new ApiResponse<MessageResponse>(
+                true,
+                "User Invited Successfully",
+                result,
+                LocalDateTime.now()
+        ));
     }
 }

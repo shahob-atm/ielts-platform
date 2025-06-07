@@ -6,14 +6,17 @@ import com.sh32bit.entity.StudentProfile;
 import com.sh32bit.entity.TeacherProfile;
 import com.sh32bit.entity.User;
 import com.sh32bit.enums.Role;
+import com.sh32bit.event.UserInvitedEvent;
 import com.sh32bit.exception.EmailAlreadyExistsException;
+import com.sh32bit.mapper.UserMapper;
 import com.sh32bit.repository.StudentProfileRepository;
 import com.sh32bit.repository.TeacherProfileRepository;
 import com.sh32bit.repository.UserRepository;
-import com.sh32bit.service.EmailService;
 import com.sh32bit.service.UserService;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,12 +24,13 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final StudentProfileRepository studentProfileRepository;
     private final TeacherProfileRepository teacherProfileRepository;
-    private final EmailService emailService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     @Transactional
@@ -37,15 +41,10 @@ public class UserServiceImpl implements UserService {
 
         String token = UUID.randomUUID().toString();
 
-        User user = User.builder()
-                .firstName(req.getFirstName())
-                .lastName(req.getLastName())
-                .email(req.getEmail())
-                .role(req.getRole())
-                .enabled(false)
-                .activationToken(token)
-                .activationTokenCreatedAt(LocalDateTime.now())
-                .build();
+        User user = UserMapper.toEntity(req);
+
+        user.setActivationToken(token);
+        user.setActivationTokenCreatedAt(LocalDateTime.now());
 
         userRepository.save(user);
 
@@ -66,12 +65,10 @@ public class UserServiceImpl implements UserService {
         }
 
         String activationLink = "http://localhost:8080/activate?token=" + token;
-        emailService.send(
-                req.getEmail(),
-                "Activate your account",
-                "<p>Hello, please activate your account: <a href=\"" + activationLink + "\">Activate</a></p>"
-        );
+        eventPublisher.publishEvent(new UserInvitedEvent(this, user, activationLink));
 
-        return new MessageResponse("success");
+        log.info("User invited successfully: {}", user.getEmail());
+
+        return new MessageResponse("User Invited Successfully");
     }
 }

@@ -40,8 +40,10 @@ springdoc:
     urls:
       - url: /docs/admin-api.yaml
         name: Admin API
-      - url: /docs/student-api.yaml
+      - url: /docs/students-api.yaml
         name: Student API
+      - url: /docs/parent-api.yaml
+        name: Parent API
 
 server:
   port: 8080
