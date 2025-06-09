@@ -5,7 +5,7 @@ info:
   description: REST API for Ielts platform
 
 tags:
-  - name: Admin
+  - name: Teacher
 
 servers:
   - url: http://localhost:8080
@@ -14,7 +14,7 @@ paths:
   /api/v1/auth/login:
     post:
       tags:
-        - Admin
+        - Teacher
       summary: User Login
       description: Authenticates the user by email and password. Returns access and refresh tokens on success.
       requestBody:
@@ -25,7 +25,7 @@ paths:
               $ref: '#/components/schemas/LoginRequest'
       responses:
         '200':
-          description: Successfully logged in
+          description: Successful login
           content:
             application/json:
               schema:
@@ -49,45 +49,39 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /api/v1/users/invite:
+  /api/v1/auth/activate:
     post:
       tags:
-        - Admin
-      summary: Invite User
-      description: Allows an admin to invite a new user (student, teacher, etc.) by email. Sends an activation link to the specified email address.
+        - Teacher
+      summary: Activate Account
+      description: Activates a user account using an activation token and sets a new password.
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InviteUserRequest'
+              $ref: '#/components/schemas/ActivateRequest'
       responses:
         '200':
-          description: User Invited Successfully
+          description: Account successfully activated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InviteUserResponse'
+                $ref: '#/components/schemas/ActivateResponse'
         '400':
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized (no or invalid JWT)
+          description: Validation error (missing or invalid token/password)
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: Email is already registered
+          description: Invalid or expired token (conflict)
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: Internal server error or email sending failed
+          description: Internal server error
           content:
             application/json:
               schema:
@@ -106,7 +100,7 @@ components:
         email:
           type: string
           description: User email
-          example: johndoe@gmail.com
+          example: user@example.com
         password:
           type: string
           description: User password
@@ -144,32 +138,22 @@ components:
           format: date-time
           description: Timestamp
 
-    InviteUserRequest:
+    ActivateRequest:
       type: object
       properties:
-        firstName:
+        token:
           type: string
-          description: User's first name
-          example: Ali
-        lastName:
+          description: Activation token
+          example: 123abcdsasgdsgdsgfdsgfds
+        password:
           type: string
-          description: User's last name
-          example: Doyi
-        email:
-          type: string
-          description: User's email address
-          example: ali@gmail.com
-        role:
-          type: string
-          description: Role of the new user (e.g., STUDENT, TEACHER)
-          example: STUDENT
+          description: New user password
+          example: myStrongPassword!
       required:
-        - firstName
-        - lastName
-        - email
-        - role
+        - token
+        - password
 
-    InviteUserResponse:
+    ActivateResponse:
       type: object
       properties:
         success:
@@ -178,13 +162,14 @@ components:
         message:
           type: string
           description: Response message
-          example: User Invited Successfully
+          example: User activated successfully
         data:
           type: object
           properties:
             message:
               type: string
-              example: User Invited Successfully
+              description: Response message
+              example: User activated successfully
           required:
             - message
         timestamp:

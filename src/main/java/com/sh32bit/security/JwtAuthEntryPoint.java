@@ -23,13 +23,15 @@ public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
 
         log.warn("401 Unauthorized - Path: {}, Message: {}", request.getRequestURI(), authException.getMessage());
 
-        response.getWriter().write("""
+        String result = """
                     {
-                      "status": 401,
-                      "error": "Unauthorized",
+                      "success": false,
                       "message": "Authentication required",
+                      "data": null,
                       "timestamp": "%s"
                     }
-                """.formatted(LocalDateTime.now()));
+                """.formatted(LocalDateTime.now());
+
+        response.getWriter().write(result);
     }
 }

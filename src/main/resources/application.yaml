@@ -44,6 +44,8 @@ springdoc:
         name: Student API
       - url: /docs/parent-api.yaml
         name: Parent API
+      - url: /docs/teacher-api.yaml
+        name: Teacher API
 
 server:
   port: 8080

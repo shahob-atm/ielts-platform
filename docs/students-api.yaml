@@ -25,15 +25,29 @@ paths:
               $ref: '#/components/schemas/LoginRequest'
       responses:
         '200':
-          description: Successful login
+          description: Successfully logged in
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/LoginResponse'
         '400':
-          description: Invalid login request
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: Invalid email or password
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /api/v1/auth/activate:
     post:
@@ -53,9 +67,25 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MessageResponse'
+                $ref: '#/components/schemas/ActivateResponse'
         '400':
-          description: Invalid activation request or token
+          description: Validation error (missing or invalid token/password)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Invalid or expired token (conflict)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
 components:
   securitySchemes:
@@ -82,17 +112,31 @@ components:
     LoginResponse:
       type: object
       properties:
-        accessToken:
+        success:
+          type: boolean
+          description: Success status
+        message:
           type: string
-          description: JWT access token
-          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-        refreshToken:
+          description: Response message
+          example: Successfully logged in
+        data:
+          type: object
+          properties:
+            accessToken:
+              type: string
+              description: JWT access token
+              example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+            refreshToken:
+              type: string
+              description: JWT refresh token
+              example: dGhpcyBpcyBhIHJlZnJlc2ggdG9rZW4=
+          required:
+            - accessToken
+            - refreshToken
+        timestamp:
           type: string
-          description: JWT refresh token
-          example: dGhpcyBpcyBhIHJlZnJlc2ggdG9rZW4=
-      required:
-        - accessToken
-        - refreshToken
+          format: date-time
+          description: Timestamp
 
     ActivateRequest:
       type: object
@@ -100,7 +144,7 @@ components:
         token:
           type: string
           description: Activation token
-          example: 123abc
+          example: 123abcdsasgdsgdsgfdsgfds
         password:
           type: string
           description: New user password
@@ -109,15 +153,46 @@ components:
         - token
         - password
 
-    MessageResponse:
+    ActivateResponse:
       type: object
       properties:
+        success:
+          type: boolean
+          description: Success status
         message:
           type: string
           description: Response message
-          example: Account activated successfully.
-      required:
-        - message
+          example: User activated successfully
+        data:
+          type: object
+          properties:
+            message:
+              type: string
+              description: Response message
+              example: User activated successfully
+          required:
+            - message
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: "error"
+        data:
+          nullable: true
+          example: null
+        timestamp:
+          type: string
+          format: date-time
+          example: "2025-06-08T19:09:05.119"
 
 security:
   - BearerAuth: []
