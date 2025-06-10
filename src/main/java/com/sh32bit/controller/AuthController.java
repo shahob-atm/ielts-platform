@@ -22,7 +22,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/activate")
-    public ResponseEntity<ApiResponse<MessageResponse>> activate(@RequestBody ActivateRequest req) {
+    public ResponseEntity<ApiResponse<MessageResponse>> activate(@RequestBody @Valid ActivateRequest req) {
         MessageResponse result = authService.activateUser(req);
 
         return ResponseEntity.ok(new ApiResponse<MessageResponse>(
@@ -46,7 +46,8 @@ public class AuthController {
     }
 
     @PostMapping("/register-parent")
-    public ResponseEntity<ApiResponse<MessageResponse>> registerParent(@RequestBody ParentRegistrationRequest req)
+    public ResponseEntity<ApiResponse<MessageResponse>> registerParent(
+            @RequestBody @Valid ParentRegistrationRequest req)
             throws Exception {
         MessageResponse result = authService.registerParent(req);
 

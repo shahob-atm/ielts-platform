@@ -5,7 +5,7 @@ info:
   description: REST API for Ielts platform
 
 tags:
-  - name: Teacher
+  - name: Teacher Api
 
 servers:
   - url: http://localhost:8080
@@ -14,7 +14,7 @@ paths:
   /api/v1/auth/login:
     post:
       tags:
-        - Admin Api
+        - Teacher Api
       summary: "User Login"
       description: "Authenticates the user by email and password. Returns access and refresh tokens on success."
       requestBody:
@@ -22,7 +22,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoginRequest'
+              $ref: '#/components/schemas/ApiResponse'
       responses:
         '200':
           description: "Login successful"
@@ -98,7 +98,7 @@ paths:
   /api/v1/auth/activate:
     post:
       tags:
-        - Teacher
+        - Teacher Api
       summary: Activate Account
       description: Activates a user account using an activation token and sets a new password.
       requestBody:
@@ -113,39 +113,59 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ActivateResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: true
+                message: "Login successful"
+                data:
+                  "message": "Account successfully activated"
+                timestamp: "2025-06-10T00:12:33"
         '400':
-          description: Validation error (missing or invalid token/password)
+          description: "Bad Request (Validation error)"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          type: string
+                        nullable: true
               example:
-                status: 400
-                error: "Bad Request"
-                message: "Password must be at least 8 characters"
-                timestamp: "2025-06-09T23:59:00"
+                success: false
+                message: "Validation failure"
+                data:
+                  - "Token must not be blank"
+                  - "Password must not be blank"
+                  - "Password must be at least 6 characters"
+                timestamp: "2025-06-10T00:22:14"
         '409':
           description: Invalid or expired token (conflict)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/ApiResponse'
               example:
-                status: 409
+                success: false
                 error: "Conflict"
                 message: "Invalid token"
+                data: null
                 timestamp: "2025-06-09T23:59:00"
         '500':
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/ApiResponse'
               example:
-                status: 500
+                success: false
                 error: "Internal Server Error"
                 message: "Unexpected error"
+                data: null
                 timestamp: "2025-06-09T23:59:00"
 
 components:
@@ -170,35 +190,6 @@ components:
         - email
         - password
 
-    LoginResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-          description: Success status
-        message:
-          type: string
-          description: Response message
-          example: Successfully logged in
-        data:
-          type: object
-          properties:
-            accessToken:
-              type: string
-              description: JWT access token
-              example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-            refreshToken:
-              type: string
-              description: JWT refresh token
-              example: dGhpcyBpcyBhIHJlZnJlc2ggdG9rZW4=
-          required:
-            - accessToken
-            - refreshToken
-        timestamp:
-          type: string
-          format: date-time
-          description: Timestamp
-
     ActivateRequest:
       type: object
       properties:
@@ -213,47 +204,6 @@ components:
       required:
         - token
         - password
-
-    ActivateResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-          description: Success status
-        message:
-          type: string
-          description: Response message
-          example: User activated successfully
-        data:
-          type: object
-          properties:
-            message:
-              type: string
-              description: Response message
-              example: User activated successfully
-          required:
-            - message
-        timestamp:
-          type: string
-          format: date-time
-          description: Timestamp
-
-    ErrorResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-          example: false
-        message:
-          type: string
-          example: "error"
-        data:
-          nullable: true
-          example: null
-        timestamp:
-          type: string
-          format: date-time
-          example: "2025-06-08T19:09:05.119"
 
     ApiResponse:
       type: object

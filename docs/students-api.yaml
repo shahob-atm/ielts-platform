@@ -98,7 +98,7 @@ paths:
   /api/v1/auth/activate:
     post:
       tags:
-        - Student
+        - Student Api
       summary: Activate Account
       description: Activates a user account using an activation token and sets a new password.
       requestBody:
@@ -113,45 +113,65 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ActivateResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+              example:
+                  success: true
+                  message: "User activated successfully"
+                  data:
+                      message: "User activated successfully"
+                  timestamp: "2025-06-10T00:22:14"
         '400':
-          description: Validation error (missing or invalid token/password)
+          description: "Bad Request (Validation error)"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          type: string
+                        nullable: true
               example:
-                status: 400
-                error: "Bad Request"
-                message: "Validation error"
-                timestamp: "2025-06-09T23:59:00"
+                success: false
+                message: "Validation failure"
+                data:
+                  - "Token must not be blank"
+                  - "Password must not be blank"
+                  - "Password must be at least 6 characters"
+                timestamp: "2025-06-10T00:22:14"
         '409':
           description: Invalid or expired token (conflict)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/ApiResponse'
               example:
-                status: 409
+                success: false
                 error: "Conflict"
                 message: "Email already exists"
+                data: null
                 timestamp: "2025-06-09T23:59:00"
         '500':
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/ApiResponse'
               example:
-                status: 500
+                success: false
                 error: "Internal Server Error"
                 message: "Failed to send invitation email"
+                data: null
                 timestamp: "2025-06-09T23:59:00"
 
   /api/v1/students/parent/link:
     get:
       tags:
-        - Student
+        - Student Api
       summary: "Link parent to student using invitation token"
       description: |
         Student confirms and links a parent profile using an email invitation token.
@@ -168,63 +188,96 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ParentLinkResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: true
+                message: "Parent linked successfully"
+                data:
+                    message: "Parent linked successfully"
+                timestamp: '2025-06-09T10:00:00'
+        '400':
+          description: "Bad Request (Validation error)"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          type: string
+                        nullable: true
+              example:
+                success: false
+                message: "Validation failure"
+                data:
+                  - "Token must not be blank"
+                timestamp: "2025-06-10T00:22:14"
         '401':
           description: Unauthorized (Authentication required, or user is not a student)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/ApiResponse'
               examples:
                 Unauthorized:
                   value:
-                    status: 401
+                    success: false
                     error: "Unauthorized"
                     message: "Authentication required"
+                    data: null
                     timestamp: "2025-06-09T10:00:00"
         '404':
           description: Not Found (student or parent profile not found)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/ApiResponse'
               examples:
                 NotFoundStudent:
                   value:
-                    status: 404
+                    success: false
                     error: "Not Found"
                     message: "child@email.com"
+                    data: null
                     timestamp: "2025-06-09T10:00:00"
                 NotFoundParentProfile:
                   value:
-                    status: 404
+                    success: false
                     error: "Not Found"
                     message: "ParentProfile userId 123"
+                    data: null
                     timestamp: "2025-06-09T10:00:00"
         '409':
           description: Conflict (invalid/expired token or already linked)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/ApiResponse'
               examples:
                 InvalidToken:
                   value:
-                    status: 409
+                    success: false
                     error: "Conflict"
                     message: "Invalid token"
+                    data: null
                     timestamp: "2025-06-09T10:00:00"
                 ExpiredToken:
                   value:
-                    status: 409
+                    success: false
                     error: "Conflict"
                     message: "Token expired"
+                    data: null
                     timestamp: "2025-06-09T10:00:00"
                 AlreadyLinked:
                   value:
-                    status: 409
+                    success: false
                     error: "Conflict"
                     message: "This child is already linked to the parent"
+                    data: null
                     timestamp: "2025-06-09T10:00:00"
 
 components:
@@ -249,35 +302,6 @@ components:
         - email
         - password
 
-    LoginResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-          description: Success status
-        message:
-          type: string
-          description: Response message
-          example: Successfully logged in
-        data:
-          type: object
-          properties:
-            accessToken:
-              type: string
-              description: JWT access token
-              example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-            refreshToken:
-              type: string
-              description: JWT refresh token
-              example: dGhpcyBpcyBhIHJlZnJlc2ggdG9rZW4=
-          required:
-            - accessToken
-            - refreshToken
-        timestamp:
-          type: string
-          format: date-time
-          description: Timestamp
-
     ActivateRequest:
       type: object
       properties:
@@ -293,66 +317,6 @@ components:
         - token
         - password
 
-    ActivateResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-          description: Success status
-        message:
-          type: string
-          description: Response message
-          example: User activated successfully
-        data:
-          type: object
-          properties:
-            message:
-              type: string
-              description: Response message
-              example: User activated successfully
-          required:
-            - message
-        timestamp:
-          type: string
-          format: date-time
-          description: Timestamp
-
-    ParentLinkResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-          example: true
-        message:
-          type: string
-          example: Parent linked successfully
-        data:
-          type: object
-          properties:
-            message:
-              type: string
-              example: Parent linked successfully
-        timestamp:
-          type: string
-          format: date-time
-          example: '2025-06-09T10:00:00'
-
-    ErrorResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-          example: false
-        message:
-          type: string
-          example: "error"
-        data:
-          nullable: true
-          example: null
-        timestamp:
-          type: string
-          format: date-time
-          example: "2025-06-08T19:09:05.119"
     ApiResponse:
       type: object
       properties:

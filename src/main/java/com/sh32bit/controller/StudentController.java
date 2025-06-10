@@ -3,6 +3,7 @@ package com.sh32bit.controller;
 import com.sh32bit.dto.response.ApiResponse;
 import com.sh32bit.dto.response.MessageResponse;
 import com.sh32bit.service.StudentService;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,7 +23,8 @@ public class StudentController {
 
     @GetMapping("/parent/link")
     @PreAuthorize("hasRole('STUDENT')")
-    public ResponseEntity<ApiResponse<MessageResponse>> linkParent(@RequestParam String token, Principal principal) {
+    public ResponseEntity<ApiResponse<MessageResponse>> linkParent(
+            @RequestParam("token") @NotBlank(message = "Token must not be blank")String token, Principal principal) {
         MessageResponse result = studentService.linkParent(token, principal.getName());
         return ResponseEntity.ok(new ApiResponse<>(true,
                 "Parent linked successfully", result, LocalDateTime.now()));

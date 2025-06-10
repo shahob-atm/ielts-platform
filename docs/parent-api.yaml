@@ -147,12 +147,19 @@ paths:
                   - type: object
                     properties:
                       data:
+                        type: array
+                        items:
+                          type: string
                         nullable: true
               example:
                 success: false
                 message: "Validation failure"
-                data: "[errors]"
-                timestamp: "2025-06-10T00:25:19"
+                data:
+                  - "firstName is required"
+                  - "lastName is required"
+                  - "email is required"
+                  - "password is required"
+                timestamp: "2025-06-10T00:22:14"
         '500':
           description: "Internal Server Error"
           content:
@@ -232,12 +239,16 @@ paths:
                   - type: object
                     properties:
                       data:
+                        type: array
+                        items:
+                          type: string
                         nullable: true
               example:
                 success: false
                 message: "Validation failure"
-                data: "[errors]"
-                timestamp: "2025-06-10T00:27:39"
+                data:
+                  - "Token must not be blank"
+                timestamp: "2025-06-10T00:22:14"
         '500':
           description: "Internal Server Error"
           content:
@@ -331,7 +342,7 @@ paths:
                     data: null
                     timestamp: "2025-06-10T00:40:07"
         '400':
-          description: "Bad Request (validation error)"
+          description: "Bad Request (Validation error)"
           content:
             application/json:
               schema:
@@ -340,12 +351,16 @@ paths:
                   - type: object
                     properties:
                       data:
+                        type: array
+                        items:
+                          type: string
                         nullable: true
               example:
                 success: false
                 message: "Validation failure"
-                data: "[errors]"
-                timestamp: "2025-06-10T00:40:12"
+                data:
+                  - "childEmail can not be blank"
+                timestamp: "2025-06-10T00:22:14"
         '500':
           description: "Internal Server Error"
           content:
