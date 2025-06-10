@@ -5,7 +5,7 @@ info:
   description: REST API for Ielts platform
 
 tags:
-  - name: Parent
+  - name: Parent Api
 
 servers:
   - url: http://localhost:8080
@@ -14,9 +14,9 @@ paths:
   /api/v1/auth/login:
     post:
       tags:
-        - Parent
-      summary: User Login
-      description: Authenticates the user by email and password. Returns access and refresh tokens on success.
+        - Parent Api
+      summary: "User Login"
+      description: "Authenticates the user by email and password. Returns access and refresh tokens on success."
       requestBody:
         required: true
         content:
@@ -25,35 +25,82 @@ paths:
               $ref: '#/components/schemas/LoginRequest'
       responses:
         '200':
-          description: Successfully logged in
+          description: "Login successful"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LoginResponse'
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: true
+                message: "Login successful"
+                data:
+                  accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                  refreshToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                timestamp: "2025-06-10T00:12:33"
         '400':
-          description: Validation error
+          description: "Bad Request (Validation error)"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          type: string
+                        nullable: true
+              example:
+                success: false
+                message: "Validation failure"
+                data:
+                  - "Email must not be blank"
+                  - "Password must not be blank"
+                timestamp: "2025-06-10T00:22:14"
         '401':
-          description: Invalid credentials
+          description: "Unauthorized (Invalid credentials)"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: false
+                error: "Unauthorized"
+                message: "Authentication required"
+                data: null
+                timestamp: "2025-06-10T00:02:22"
+        '409':
+          description: "Conflict (Account blocked or other business conflict)"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: false
+                error: "Conflict"
+                message: "Account is blocked"
+                data: null
+                timestamp: "2025-06-10T00:02:22"
         '500':
-          description: Internal server error
+          description: "Internal server error"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: false
+                error: "Internal server error"
+                message: "Server error"
+                data: null
+                timestamp: "2025-06-09T23:55:22"
 
   /api/v1/auth/register-parent:
     post:
       tags:
-        - Parent
-      summary: "Register parent"
+        - Parent Api
+      summary: "Register a new parent"
+      description: "Register a new parent"
       requestBody:
         required: true
         content:
@@ -66,63 +113,255 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ParentRegisterResponse'
-        '400':
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: true
+                message: "Parent registered successfully"
+                data:
+                  message: "Parent registered successfully"
+                timestamp: "2025-06-10T00:25:12"
         '409':
-          description: Email already exists
+          description: "Email already exists"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        nullable: true
+              example:
+                success: false
+                message: "Email already exists"
+                data: null
+                timestamp: "2025-06-10T00:25:16"
+        '400':
+          description: "Bad Request (Validation error)"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        nullable: true
+              example:
+                success: false
+                message: "Validation failure"
+                data: "[errors]"
+                timestamp: "2025-06-10T00:25:19"
         '500':
-          description: Internal server error or email sending failed
+          description: "Internal Server Error"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        nullable: true
+              example:
+                success: false
+                message: "Failed to send activation email"
+                data: null
+                timestamp: "2025-06-10T00:25:25"
 
   /api/v1/auth/parent-activate:
     get:
       tags:
-        - Parent
-      summary: "Activate parent account"
+        - Parent Api
+      summary: "Activate parent account by token"
       parameters:
-        - name: token
-          in: query
-          required: true
-          description: Activation token sent to parent's email
+        - in: query
+          name: token
           schema:
             type: string
+          required: true
+          description: "Activation token sent to parent's email"
       responses:
         '200':
           description: "Parent activated successfully"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ParentActivateResponse'
-        '400':
-          description: Validation error (missing or invalid token)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: true
+                message: "Parent activated successfully"
+                data:
+                  message: "Parent activated successfully"
+                timestamp: "2025-06-10T00:27:30"
         '409':
-          description: Invalid or expired token (conflict)
+          description: "Invalid or expired token"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        nullable: true
+              examples:
+                invalidToken:
+                  summary: "Token is invalid"
+                  value:
+                    success: false
+                    message: "Invalid token"
+                    data: null
+                    timestamp: "2025-06-10T00:27:32"
+                tokenExpired:
+                  summary: "Token expired"
+                  value:
+                    success: false
+                    message: "Token expired"
+                    data: null
+                    timestamp: "2025-06-10T00:27:36"
+        '400':
+          description: "Bad Request (Validation error)"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        nullable: true
+              example:
+                success: false
+                message: "Validation failure"
+                data: "[errors]"
+                timestamp: "2025-06-10T00:27:39"
         '500':
-          description: Internal server error
+          description: "Internal Server Error"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        nullable: true
+              example:
+                success: false
+                message: "Unexpected error"
+                data: null
+                timestamp: "2025-06-10T00:27:42"
+
+  /api/v1/parents/children/invite:
+    post:
+      tags:
+        - Parent Api
+      summary: "Invite a child (parent invites their child by email)"
+      description: "Invite a child (parent invites their child by email)"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                childEmail:
+                  type: string
+                  format: email
+                  description: "Child's email address"
+              required:
+                - childEmail
+      responses:
+        '200':
+          description: "Invitation sent to child"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: true
+                message: "Invitation sent to child"
+                data:
+                  message: "Invitation sent to child"
+                timestamp: "2025-06-10T00:40:00"
+        '401':
+          description: "Unauthorized (not authenticated or invalid token)"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        nullable: true
+              example:
+                success: false
+                message: "Authentication required"
+                data: null
+                timestamp: "2025-06-10T00:44:40"
+        '404':
+          description: "Parent or child not found"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        nullable: true
+              examples:
+                parentNotFound:
+                  summary: "Parent not found"
+                  value:
+                    success: false
+                    message: "Parent user not found"
+                    data: null
+                    timestamp: "2025-06-10T00:40:04"
+                childNotFound:
+                  summary: "Child not found"
+                  value:
+                    success: false
+                    message: "Child user not found"
+                    data: null
+                    timestamp: "2025-06-10T00:40:07"
+        '400':
+          description: "Bad Request (validation error)"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        nullable: true
+              example:
+                success: false
+                message: "Validation failure"
+                data: "[errors]"
+                timestamp: "2025-06-10T00:40:12"
+        '500':
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        nullable: true
+              example:
+                success: false
+                message: "Unexpected error"
+                data: null
+                timestamp: "2025-06-10T00:40:16"
 
 components:
   securitySchemes:
@@ -172,96 +411,32 @@ components:
           description: Parent's password
           example: 1234567
 
-    ParentRegisterResponse:
+    InviteChildRequest:
       type: object
       properties:
-        success:
-          type: boolean
-          description: Success status
-        message:
+        childEmail:
           type: string
-          description: Response message
-          example: Parent registered successfully
-        data:
-          type: object
-          properties:
-            message:
-              type: string
-              example: Parent registered successfully
-          required:
-            - message
-        timestamp:
-          type: string
-          format: date-time
-          description: Timestamp
+          format: email
+          example: student@example.com
+      required:
+        - childEmail
 
-    ParentActivateResponse:
+    ApiResponse:
       type: object
       properties:
         success:
           type: boolean
-          description: Indicates if request was successful
           example: true
         message:
           type: string
-          description: Main response message
-          example: Parent activated successfully
-        data:
-          type: object
-          properties:
-            message:
-              type: string
-              example: Parent activated successfully
-        timestamp:
-          type: string
-          format: date-time
-          description: Time the response was generated
-
-    LoginResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-          description: Success status
-        message:
-          type: string
-          description: Response message
-          example: Successfully logged in
-        data:
-          type: object
-          properties:
-            accessToken:
-              type: string
-              description: JWT access token
-              example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-            refreshToken:
-              type: string
-              description: JWT refresh token
-              example: dGhpcyBpcyBhIHJlZnJlc2ggdG9rZW4=
-          required:
-            - accessToken
-            - refreshToken
-        timestamp:
-          type: string
-          format: date-time
-          description: Timestamp
-
-    ErrorResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-          example: false
-        message:
-          type: string
-          example: "error"
+          example: "Operation successful"
         data:
           nullable: true
-          example: null
+          description: "Any response data"
         timestamp:
           type: string
           format: date-time
-          example: "2025-06-08T19:09:05.119"
+          example: "2025-06-10T00:11:22"
 
 security:
   - BearerAuth: []

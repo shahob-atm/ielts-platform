@@ -5,6 +5,7 @@ import com.sh32bit.dto.response.ApiResponse;
 import com.sh32bit.dto.response.MessageResponse;
 import com.sh32bit.service.UserService;
 import jakarta.mail.MessagingException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,7 +24,7 @@ public class UserController {
 
     @PostMapping("/invite")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public ResponseEntity<ApiResponse<MessageResponse>> inviteUser(@RequestBody InviteUserRequest req)
+    public ResponseEntity<ApiResponse<MessageResponse>> inviteUser(@RequestBody @Valid InviteUserRequest req)
             throws MessagingException {
         MessageResponse result = userService.inviteUser(req);
 

@@ -7,6 +7,8 @@ import com.sh32bit.dto.response.ApiResponse;
 import com.sh32bit.dto.response.LoginResponse;
 import com.sh32bit.dto.response.MessageResponse;
 import com.sh32bit.service.AuthService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +34,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<LoginResponse>> login(@RequestBody LoginRequest request) throws Exception {
+    public ResponseEntity<ApiResponse<LoginResponse>> login(@RequestBody @Valid LoginRequest request) throws Exception {
         LoginResponse result = authService.login(request);
 
         return ResponseEntity.ok(new ApiResponse<LoginResponse>(
@@ -57,7 +59,8 @@ public class AuthController {
     }
 
     @GetMapping("/parent-activate")
-    public ResponseEntity<ApiResponse<MessageResponse>> activateParent(@RequestParam("token") String token) {
+    public ResponseEntity<ApiResponse<MessageResponse>> activateParent(
+            @RequestParam("token") @NotBlank(message = "Token must not be blank") String token) {
         MessageResponse result = authService.activateParent(token);
 
         return ResponseEntity.ok(new ApiResponse<MessageResponse>(
