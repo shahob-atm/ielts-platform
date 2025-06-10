@@ -24,7 +24,7 @@ public class StudentController {
     @GetMapping("/parent/link")
     @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<ApiResponse<MessageResponse>> linkParent(
-            @RequestParam("token") @NotBlank(message = "Token must not be blank")String token, Principal principal) {
+            @RequestParam("token") @NotBlank(message = "Token must not be blank") String token, Principal principal) {
         MessageResponse result = studentService.linkParent(token, principal.getName());
         return ResponseEntity.ok(new ApiResponse<>(true,
                 "Parent linked successfully", result, LocalDateTime.now()));

@@ -378,6 +378,85 @@ paths:
                 data: null
                 timestamp: "2025-06-10T00:40:16"
 
+  /api/v1/parents/me/children:
+    get:
+      tags:
+        - Parent Api
+      summary: "Get the list of children (students) for the authenticated parent"
+      description: "Get the list of children (students) for the authenticated parent"
+      responses:
+        '200':
+          description: "List of students belonging to the parent"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                  success: true
+                  message: Children found
+                  data:
+                    - id: 7
+                      firstName: John
+                      lastName: Smith
+                      email: john.smith@gmail.com
+                      createdAt: 2025-06-01T12:00:00
+                      updatedAt: 2025-06-08T12:00:00
+                    - id: 9
+                      firstName: Alice
+                      lastName: Doe
+                      email: alice.doe@gmail.com
+                      createdAt: 2025-06-02T15:30:00
+                      updatedAt: 2025-06-09T10:00:00
+                  timestamp: 2025-06-10T19:53:37.495238
+        '401':
+          description: "Unauthorized (not authenticated or invalid token)"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        nullable: true
+              example:
+                success: false
+                message: "Authentication required"
+                data: null
+                timestamp: "2025-06-10T00:44:40"
+        '403':
+          description: "Parent role required"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        nullable: true
+              example:
+                success: false
+                message: "Parent role required"
+                data: null
+                timestamp: "2025-06-10T00:44:40"
+        '404':
+          description: "Parent not found or parent profile does not exist"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        nullable: true
+              example:
+                success: false
+                message: "Parent not found or parent profile does not exist"
+                data: null
+                timestamp: "2025-06-10T00:44:40"
+
 components:
   securitySchemes:
     BearerAuth:

@@ -109,7 +109,7 @@ paths:
               $ref: '#/components/schemas/ActivateRequest'
       responses:
         '200':
-          description: Account successfully activated
+          description: "Account successfully activated"
           content:
             application/json:
               schema:
@@ -117,7 +117,7 @@ paths:
                   - $ref: '#/components/schemas/ApiResponse'
               example:
                 success: true
-                message: "Login successful"
+                message: "Account successfully activated"
                 data:
                   "message": "Account successfully activated"
                 timestamp: "2025-06-10T00:12:33"
