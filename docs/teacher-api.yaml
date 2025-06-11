@@ -168,7 +168,7 @@ paths:
                 data: null
                 timestamp: "2025-06-09T23:59:00"
 
-  /api/teachers/me/groups:
+  /api/v1/groups/teacher-groups:
     get:
       tags:
         - Teacher Api
