@@ -38,7 +38,7 @@ public class Group {
     @Enumerated(EnumType.STRING)
     private GroupStatus status; // ACTIVE, CLOSED
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "group_students",
             joinColumns = @JoinColumn(name = "group_id"),

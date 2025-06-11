@@ -168,6 +168,83 @@ paths:
                 data: null
                 timestamp: "2025-06-09T23:59:00"
 
+  /api/teachers/me/groups:
+    get:
+      tags:
+        - Teacher Api
+      summary: Get all groups assigned to the authenticated teacher
+      description: Get all groups assigned to the authenticated teacher
+      responses:
+        '200':
+          description: List of groups belonging to the teacher
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: true
+                message: "Groups found"
+                data:
+                  - id: 7
+                    name: "Group A"
+                    courseName: "Pre-IELTS"
+                    startDateTime: "2025-06-10T00:11:22"
+                    endDateTime: "2025-10-10T00:11:22"
+                    status: "ACTIVE"
+                    teacherId: 1
+                    firstName: "Anna"
+                    lastName: "Alarich"
+                    email: "anna@gmail.com"
+        '401':
+          description: "Unauthorized (Invalid credentials)"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: false
+                error: "Unauthorized"
+                message: "Authentication required"
+                data: null
+                timestamp: "2025-06-10T00:02:22"
+        '403':
+          description: Teacher role required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: false
+                error: "Forbidden"
+                message: "Teacher role required"
+                data: null
+                timestamp: 2025-06-10T21:40:00
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: false
+                error: Not Found
+                message:
+                  Teacher profile not found: 13
+                data: null
+                timestamp: 2025-06-10T21:45:00
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: false
+                error: "Internal Server Error"
+                message: "Unexpected error"
+                data: null
+                timestamp: "2025-06-09T23:59:00"
+
 components:
   securitySchemes:
     BearerAuth:
