@@ -4,9 +4,6 @@ info:
   version: "1.0"
   description: REST API for Ielts platform
 
-tags:
-  - name: Parent Api
-
 servers:
   - url: http://localhost:8080
 
@@ -14,7 +11,7 @@ paths:
   /api/v1/auth/login:
     post:
       tags:
-        - Parent Api
+        - Auth
       summary: "User Login"
       description: "Authenticates the user by email and password. Returns access and refresh tokens on success."
       requestBody:
@@ -98,7 +95,7 @@ paths:
   /api/v1/auth/register-parent:
     post:
       tags:
-        - Parent Api
+        - Auth
       summary: "Register a new parent"
       description: "Register a new parent"
       requestBody:
@@ -180,7 +177,7 @@ paths:
   /api/v1/auth/parent-activate:
     get:
       tags:
-        - Parent Api
+        - Auth
       summary: "Activate parent account by token"
       parameters:
         - in: query
@@ -269,7 +266,7 @@ paths:
   /api/v1/parents/children/invite:
     post:
       tags:
-        - Parent Api
+        - Parents
       summary: "Invite a child (parent invites their child by email)"
       description: "Invite a child (parent invites their child by email)"
       requestBody:
@@ -381,7 +378,7 @@ paths:
   /api/v1/parents/me/children:
     get:
       tags:
-        - Parent Api
+        - Parents
       summary: "Get the list of children (students) for the authenticated parent"
       description: "Get the list of children (students) for the authenticated parent"
       responses:

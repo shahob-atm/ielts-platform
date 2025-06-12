@@ -4,9 +4,6 @@ info:
   version: "1.0"
   description: REST API for Ielts platform
 
-tags:
-  - name: Teacher Api
-
 servers:
   - url: http://localhost:8080
 
@@ -14,7 +11,7 @@ paths:
   /api/v1/auth/login:
     post:
       tags:
-        - Teacher Api
+        - Auth
       summary: "User Login"
       description: "Authenticates the user by email and password. Returns access and refresh tokens on success."
       requestBody:
@@ -98,7 +95,7 @@ paths:
   /api/v1/auth/activate:
     post:
       tags:
-        - Teacher Api
+        - Auth
       summary: Activate Account
       description: Activates a user account using an activation token and sets a new password.
       requestBody:
@@ -171,7 +168,7 @@ paths:
   /api/v1/groups/teacher-groups:
     get:
       tags:
-        - Teacher Api
+        - Group
       summary: Get all groups assigned to the authenticated teacher
       description: Get all groups assigned to the authenticated teacher
       responses:
@@ -245,6 +242,256 @@ paths:
                 data: null
                 timestamp: "2025-06-09T23:59:00"
 
+  /api/v1/groups/group/{groupId}/monthly:
+    get:
+      summary: Get group monthly attendance and grade report
+      tags:
+        - Group
+      parameters:
+        - in: path
+          name: groupId
+          required: true
+          schema:
+            type: integer
+          description: Group ID
+        - in: query
+          name: date
+          required: true
+          schema:
+            type: string
+            format: date
+          description: Any date in the target month (e.g. "2025-06-01")
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      lessonDays:
+                        type: array
+                        items:
+                          type: integer
+                        description: Lesson days in month
+                        example: [ 13, 16, 18, 20, 23, 25, 27, 30 ]
+                      students:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            studentId:
+                              type: integer
+                              example: 1
+                            fullName:
+                              type: string
+                              example: Temur G'aniyev
+                            attendanceList:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  lessonId:
+                                    type: integer
+                                    example: 1
+                                  attendanceId:
+                                    type: integer
+                                    example: 1
+                                  gradeId:
+                                    type: integer
+                                    example: 1
+                                  lessonDate:
+                                    type: string
+                                    format: date
+                                    example: 2025-06-13
+                                  topic:
+                                    type: string
+                                    example: Auto-generated lesson for 2025-06-13
+                                  present:
+                                    type: boolean
+                                    example: true
+                                  attendanceComment:
+                                    type: string
+                                    example: "yes"
+                                  grade:
+                                    type: number
+                                    format: double
+                                    example: 8.04
+                                  gradeComment:
+                                    type: string
+                                    example: "Fake baho: 8,0"
+                                  lessonStartTime:
+                                    type: string
+                                    format: time
+                                    example: "09:00:00"
+                                  lessonEndTime:
+                                    type: string
+                                    format: time
+                                    example: "10:30:00"
+              examples:
+                application/json:
+                  value:
+                    success: true
+                    message: success
+                    data:
+                      lessonDays: [ 13, 16, 18, 20, 23, 25, 27, 30 ]
+                      students:
+                        - studentId: 1
+                          fullName: "Temur G'aniyev"
+                          attendanceList:
+                            - lessonId: 1
+                              attendanceId: 1
+                              gradeId: 1
+                              lessonDate: "2025-06-13"
+                              topic: "Auto-generated lesson for 2025-06-13"
+                              present: true
+                              attendanceComment: "yes"
+                              grade: 8.04
+                              gradeComment: "Fake baho: 8,0"
+                              lessonStartTime: "09:00:00"
+                              lessonEndTime: "10:30:00"
+                            - lessonId: 2
+                              attendanceId: 3
+                              gradeId: 3
+                              lessonDate: "2025-06-16"
+                              topic: "Auto-generated lesson for 2025-06-16"
+                              present: true
+                              attendanceComment: "yes"
+                              grade: 8.7
+                              gradeComment: "Fake baho: 8,7"
+                              lessonStartTime: "09:00:00"
+                              lessonEndTime: "10:30:00"
+                        - studentId: 2
+                          fullName: "Javohir Jamolov"
+                          attendanceList:
+                            - lessonId: 1
+                              attendanceId: 2
+                              gradeId: 2
+                              lessonDate: "2025-06-13"
+                              topic: "Auto-generated lesson for 2025-06-13"
+                              present: true
+                              attendanceComment: "yes"
+                              grade: 7.95
+                              gradeComment: "Fake baho: 8,0"
+                              lessonStartTime: "09:00:00"
+                              lessonEndTime: "10:30:00"
+                            - lessonId: 2
+                              attendanceId: 4
+                              gradeId: 4
+                              lessonDate: "2025-06-16"
+                              topic: "Auto-generated lesson for 2025-06-16"
+                              present: false
+                              attendanceComment: "not"
+                              grade: 7.28
+                              gradeComment: "Fake baho: 7,3"
+                              lessonStartTime: "09:00:00"
+                              lessonEndTime: "10:30:00"
+        '400':
+          description: Invalid input or bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    nullable: true
+                  timestamp:
+                    type: string
+                    format: date-time
+              example:
+                success: false
+                message: "Invalid date format: expected yyyy-MM-dd"
+                data: null
+                timestamp: "2025-06-13T14:25:33.123456"
+        '401':
+          description: "Unauthorized (Invalid credentials)"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: false
+                error: "Unauthorized"
+                message: "Authentication required"
+                data: null
+                timestamp: "2025-06-10T00:02:22"
+        '403':
+            description: Forbidden – Teacher role required
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                    message:
+                      type: string
+                    data:
+                      nullable: true
+                    timestamp:
+                      type: string
+                      format: date-time
+                example:
+                  success: false
+                  message: "Teacher role required"
+                  data: null
+                  timestamp: "2025-06-13T14:26:45.789012"
+        '404':
+            description: Not Found – Group not found
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                    message:
+                      type: string
+                    data:
+                      nullable: true
+                    timestamp:
+                      type: string
+                      format: date-time
+                example:
+                  success: false
+                  message: "Group not found"
+                  data: null
+                  timestamp: "2025-06-13T14:27:01.654321"
+        '500':
+            description: Internal Server Error
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                    message:
+                      type: string
+                    data:
+                      nullable: true
+                    timestamp:
+                      type: string
+                      format: date-time
+                example:
+                  success: false
+                  message: "Internal Server Error"
+                  data: null
+                  timestamp: "2025-06-13T14:27:30.789456"
+
 components:
   securitySchemes:
     BearerAuth:
@@ -258,7 +505,7 @@ components:
         email:
           type: string
           description: User email
-          example: user@example.com
+          example: oybek@gmail.com
         password:
           type: string
           description: User password
