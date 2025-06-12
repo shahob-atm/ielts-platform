@@ -16,14 +16,16 @@ import java.util.*;
 @Component
 @RequiredArgsConstructor
 public class DataLoader implements CommandLineRunner {
-    private final UserRepository userRepository;
     private final ParentProfileRepository parentProfileRepository;
     private final StudentProfileRepository studentProfileRepository;
     private final TeacherProfileRepository teacherProfileRepository;
+    private final GroupStudentRepository groupStudentRepository;
+    private final GroupTeacherRepository groupTeacherRepository;
+    private final AttendanceRepository attendanceRepository;
+    private final UserRepository userRepository;
     private final GroupRepository groupRepository;
     private final CourseRepository courseRepository;
     private final LessonRepository lessonRepository;
-    private final AttendanceRepository attendanceRepository;
     private final GradeRepository gradeRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -47,6 +49,12 @@ public class DataLoader implements CommandLineRunner {
         List<Group> groupList = generateGroups(courseList, teacherProfiles, studentProfiles);
         groupRepository.saveAll(groupList);
 
+        List<GroupTeacher> groupTeachers = generateGroupTeachers(groupList, teacherProfiles);
+        groupTeacherRepository.saveAll(groupTeachers);
+
+        List<GroupStudent> groupStudents = generateGroupStudents(groupList, studentProfiles);
+        groupStudentRepository.saveAll(groupStudents);
+
         List<Lesson> lessons = lessonGenerator(groupList.get(0));
         lessonRepository.saveAll(lessons);
 
@@ -57,6 +65,31 @@ public class DataLoader implements CommandLineRunner {
         gradeRepository.saveAll(grades);
     }
 
+    private List<GroupStudent> generateGroupStudents(List<Group> groupList, List<StudentProfile> studentProfiles) {
+        return List.of(
+                GroupStudent.builder()
+                        .group(groupList.get(0))
+                        .student(studentProfiles.get(0))
+                        .joinDate(LocalDate.now())
+                        .build(),
+                GroupStudent.builder()
+                        .group(groupList.get(0))
+                        .student(studentProfiles.get(1))
+                        .joinDate(LocalDate.now())
+                        .build()
+        );
+    }
+
+    private List<GroupTeacher> generateGroupTeachers(List<Group> groupList, List<TeacherProfile> teacherProfiles) {
+        return List.of(
+                GroupTeacher.builder()
+                        .group(groupList.get(0))
+                        .teacher(teacherProfiles.get(0))
+                        .joinDate(LocalDate.now())
+                        .build()
+        );
+    }
+
     private List<Group> generateGroups(List<Course> courseList,
                                        List<TeacherProfile> teacherProfiles,
                                        List<StudentProfile> studentProfiles
@@ -65,11 +98,9 @@ public class DataLoader implements CommandLineRunner {
                 Group.builder()
                         .name("IELTS 6.0 Morning")
                         .course(courseList.get(0))
-                        .teacher(teacherProfiles.get(0))
                         .startDateTime(LocalDateTime.now())
                         .endDateTime(LocalDateTime.now().plusMonths(courseList.get(0).getDurationMonth()))
                         .status(GroupStatus.ACTIVE)
-                        .students(Set.of(studentProfiles.get(0), studentProfiles.get(1)))
                         .build());
     }
 

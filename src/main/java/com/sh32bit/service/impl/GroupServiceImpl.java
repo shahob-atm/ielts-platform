@@ -15,7 +15,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,6 +31,8 @@ public class GroupServiceImpl implements GroupService {
     private final LessonRepository lessonRepository;
     private final AttendanceRepository attendanceRepository;
     private final GradeRepository gradeRepository;
+    private final GroupStudentRepository groupStudentRepository;
+    private final GroupTeacherRepository groupTeacherRepository;
 
     @Override
     public List<GroupResponse> getGroupsByTeacher(String email) {
@@ -39,29 +44,29 @@ public class GroupServiceImpl implements GroupService {
                 .orElseThrow(() -> new NotFoundException("Teacher profile not found!"));
         log.info("profile id: {}", profile.getId());
 
-        List<Group> groups = groupRepository.findAllByTeacher(profile);
-        log.info("groups size: {}", groups.size());
+        List<GroupTeacher> links = groupTeacherRepository.findActiveGroupsForTeacher(
+                profile.getId(), LocalDate.now());
 
-        return groups.stream().map(GroupMapper::toDTO).collect(Collectors.toList());
+        return links.stream()
+                .map(gt -> GroupMapper.toDTO(gt.getGroup(), gt.getTeacher()))
+                .collect(Collectors.toList());
     }
 
     @Override
     public GroupMonthlyReportResponse getGroupMonthReport(Long groupId, int year, int month) {
-        Group group = groupRepository.findById(groupId)
-                .orElseThrow(() -> new NotFoundException("Group not found"));
-
-        Set<StudentProfile> students = group.getStudents();
-        if (students.isEmpty()) return new GroupMonthlyReportResponse(Collections.emptyList(), Collections.emptyList());
+        Group group = getGroup(groupId);
 
         YearMonth yearMonth = YearMonth.of(year, month);
         LocalDate start = yearMonth.atDay(1);
         LocalDate end = yearMonth.atEndOfMonth();
 
-        List<Lesson> lessons = lessonRepository.findByGroupIdAndDateBetween(groupId, start, end);
-        if (lessons.isEmpty()) return new GroupMonthlyReportResponse(Collections.emptyList(), Collections.emptyList());
+        List<StudentProfile> students = getActiveStudentsInPeriod(groupId, start, end);
+        if (students.isEmpty())
+            return new GroupMonthlyReportResponse(Collections.emptyList(), Collections.emptyList());
 
-        List<Long> lessonIds = lessons.stream().map(Lesson::getId).toList();
-        List<Long> studentIds = students.stream().map(StudentProfile::getId).toList();
+        List<Lesson> lessons = getLessonsInPeriod(groupId, start, end);
+        if (lessons.isEmpty())
+            return new GroupMonthlyReportResponse(Collections.emptyList(), Collections.emptyList());
 
         List<Integer> lessonDays = lessons.stream()
                 .map(l -> l.getDate().getDayOfMonth())
@@ -69,20 +74,56 @@ public class GroupServiceImpl implements GroupService {
                 .sorted()
                 .toList();
 
+        Map<String, Attendance> attendanceMap = getAttendanceMap(lessons, students);
+        Map<String, Grade> gradeMap = getGradeMap(lessons, students);
+
+        List<StudentAttendanceGradeReport> studentReports = buildStudentReports(students, lessons, attendanceMap, gradeMap);
+
+        return new GroupMonthlyReportResponse(lessonDays, studentReports);
+    }
+
+    private Group getGroup(Long groupId) {
+        return groupRepository.findById(groupId)
+                .orElseThrow(() -> new NotFoundException("Group not found"));
+    }
+
+    private List<StudentProfile> getActiveStudentsInPeriod(Long groupId, LocalDate start, LocalDate end) {
+        List<GroupStudent> groupStudents = groupStudentRepository.findActiveStudentsInPeriod(groupId, start, end);
+        return groupStudents.stream().map(GroupStudent::getStudent).distinct().toList();
+    }
+
+    private List<Lesson> getLessonsInPeriod(Long groupId, LocalDate start, LocalDate end) {
+        return lessonRepository.findByGroupIdAndDateBetween(groupId, start, end);
+    }
+
+    private Map<String, Attendance> getAttendanceMap(List<Lesson> lessons, List<StudentProfile> students) {
+        List<Long> lessonIds = lessons.stream().map(Lesson::getId).toList();
+        List<Long> studentIds = students.stream().map(StudentProfile::getId).toList();
         List<Attendance> attendances = attendanceRepository.findByLessonIdInAndStudentIdIn(lessonIds, studentIds);
+
+        return attendances.stream().collect(Collectors.toMap(
+                a -> a.getLesson().getId() + "_" + a.getStudent().getId(),
+                a -> a
+        ));
+    }
+
+    private Map<String, Grade> getGradeMap(List<Lesson> lessons, List<StudentProfile> students) {
+        List<Long> lessonIds = lessons.stream().map(Lesson::getId).toList();
+        List<Long> studentIds = students.stream().map(StudentProfile::getId).toList();
         List<Grade> grades = gradeRepository.findByLessonIdInAndStudentIdIn(lessonIds, studentIds);
 
-        Map<String, Attendance> attendanceMap = attendances.stream()
-                .collect(Collectors.toMap(
-                        a -> a.getLesson().getId() + "_" + a.getStudent().getId(),
-                        a -> a
-                ));
-        Map<String, Grade> gradeMap = grades.stream()
-                .collect(Collectors.toMap(
-                        g -> g.getLesson().getId() + "_" + g.getStudent().getId(),
-                        g -> g
-                ));
+        return grades.stream().collect(Collectors.toMap(
+                g -> g.getLesson().getId() + "_" + g.getStudent().getId(),
+                g -> g
+        ));
+    }
 
+    private List<StudentAttendanceGradeReport> buildStudentReports(
+            List<StudentProfile> students,
+            List<Lesson> lessons,
+            Map<String, Attendance> attendanceMap,
+            Map<String, Grade> gradeMap
+    ) {
         List<StudentAttendanceGradeReport> studentReports = new ArrayList<>();
         for (StudentProfile student : students) {
             StudentAttendanceGradeReport report = new StudentAttendanceGradeReport();
@@ -126,6 +167,6 @@ public class GroupServiceImpl implements GroupService {
             report.setAttendanceList(agList);
             studentReports.add(report);
         }
-        return new GroupMonthlyReportResponse(lessonDays, studentReports);
+        return studentReports;
     }
 }
