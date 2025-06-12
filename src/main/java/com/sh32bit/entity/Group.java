@@ -5,8 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Getter
@@ -26,9 +25,6 @@ public class Group {
     @ManyToOne
     private Course course;
 
-    @ManyToOne
-    private TeacherProfile teacher;
-
     @Column(nullable = false)
     private LocalDateTime startDateTime;
 
@@ -38,19 +34,20 @@ public class Group {
     @Enumerated(EnumType.STRING)
     private GroupStatus status; // ACTIVE, CLOSED
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "group_students",
-            joinColumns = @JoinColumn(name = "group_id"),
-            inverseJoinColumns = @JoinColumn(name = "student_profile_id")
-    )
-    private Set<StudentProfile> students = new HashSet<>();
-
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
     @Column(nullable = false)
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "group")
+    private List<GroupStudent> groupStudents;
+
+    @OneToMany(mappedBy = "group")
+    private List<GroupTeacher> groupTeachers;
+
+    @OneToMany(mappedBy = "group")
+    private List<Lesson> lessons;
 
     @PrePersist
     protected void onCreate() {
