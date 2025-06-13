@@ -18,10 +18,7 @@ public class Lesson {
     private Long id;
 
     @ManyToOne
-    private Group group;
-
-    @ManyToOne
-    private TeacherProfile teacher;
+    private GroupTeacher groupTeacher;
 
     @Column(nullable = false)
     private LocalDate date;
@@ -33,4 +30,12 @@ public class Lesson {
     private LocalTime endTime;
 
     private String topic;
+
+    public Group getGroup() {
+        return groupTeacher != null ? groupTeacher.getGroup() : null;
+    }
+
+    public TeacherProfile getTeacher() {
+        return groupTeacher != null ? groupTeacher.getTeacher() : null;
+    }
 }

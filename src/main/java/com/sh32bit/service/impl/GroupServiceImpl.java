@@ -15,10 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,8 +50,18 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public GroupMonthlyReportResponse getGroupMonthReport(Long groupId, int year, int month) {
+    public GroupMonthlyReportResponse getGroupMonthReport(Long groupId, int year, int month, String email) {
         Group group = getGroup(groupId);
+
+        TeacherProfile teacherProfile = teacherProfileRepository.findByUserEmail(email)
+                .orElseThrow(() -> new NotFoundException("Teacher profile not found!"));
+
+        Optional<GroupTeacher> groupTeacher = groupTeacherRepository
+                .findActiveGroupTeacher(group.getId(), teacherProfile.getId(), LocalDate.now());
+
+        if (groupTeacher.isEmpty()) {
+            return new GroupMonthlyReportResponse(Collections.emptyList(), Collections.emptyList());
+        }
 
         YearMonth yearMonth = YearMonth.of(year, month);
         LocalDate start = yearMonth.atDay(1);

@@ -40,11 +40,13 @@ public class GroupController {
     public ResponseEntity<ApiResponse<GroupMonthlyReportResponse>> getGroupMonthlyReport(
             @PathVariable Long groupId,
             @RequestParam("date")
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            Principal principal) {
         int year = date.getYear();
         int month = date.getMonthValue();
+        String email = principal.getName();
 
-        GroupMonthlyReportResponse result = groupService.getGroupMonthReport(groupId, year, month);
+        GroupMonthlyReportResponse result = groupService.getGroupMonthReport(groupId, year, month, email);
 
         return ResponseEntity.ok(new ApiResponse<>(
                 true,

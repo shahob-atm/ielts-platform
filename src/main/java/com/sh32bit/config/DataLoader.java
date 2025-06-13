@@ -55,7 +55,7 @@ public class DataLoader implements CommandLineRunner {
         List<GroupStudent> groupStudents = generateGroupStudents(groupList, studentProfiles);
         groupStudentRepository.saveAll(groupStudents);
 
-        List<Lesson> lessons = lessonGenerator(groupList.get(0));
+        List<Lesson> lessons = lessonGenerator(groupList.get(0), groupTeachers);
         lessonRepository.saveAll(lessons);
 
         List<Attendance> attendances = generateAttendance(studentProfiles, lessons);
@@ -86,6 +86,12 @@ public class DataLoader implements CommandLineRunner {
                         .group(groupList.get(0))
                         .teacher(teacherProfiles.get(0))
                         .joinDate(LocalDate.now())
+                        .build(),
+                GroupTeacher.builder()
+                        .group(groupList.get(0))
+                        .teacher(teacherProfiles.get(1))
+                        .joinDate(LocalDate.now().minusMonths(1))
+                        .leaveDate(LocalDate.now().minusDays(2))
                         .build()
         );
     }
@@ -125,7 +131,8 @@ public class DataLoader implements CommandLineRunner {
 
     private List<TeacherProfile> generateTeacherProfiles(List<User> userList) {
         return List.of(
-                TeacherProfile.builder().user(userList.get(2)).build()
+                TeacherProfile.builder().user(userList.get(2)).build(),
+                TeacherProfile.builder().user(userList.get(5)).build()
         );
     }
 
@@ -189,6 +196,14 @@ public class DataLoader implements CommandLineRunner {
                         .role(Role.STUDENT)
                         .enabled(true)
                         .password(passwordEncoder.encode("123456"))
+                        .build(),
+                User.builder()
+                        .firstName("Azizbek")
+                        .lastName("Ravshanovich")
+                        .email("azizbek@gmail.com")
+                        .role(Role.TEACHER)
+                        .enabled(true)
+                        .password(passwordEncoder.encode("123456"))
                         .build()
         );
     }
@@ -244,7 +259,7 @@ public class DataLoader implements CommandLineRunner {
         return attendances;
     }
 
-    private List<Lesson> lessonGenerator(Group group) {
+    private List<Lesson> lessonGenerator(Group group, List<GroupTeacher> groupTeachers) {
         Set<DayOfWeek> dayOfWeeks = Set.of(
                 DayOfWeek.MONDAY,
                 DayOfWeek.WEDNESDAY,
@@ -266,11 +281,11 @@ public class DataLoader implements CommandLineRunner {
         for (LocalDate date = from; !date.isAfter(to); date = date.plusDays(1)) {
             if (dayOfWeeks.contains(date.getDayOfWeek())) {
                 Lesson lesson = new Lesson();
-                lesson.setGroup(group);
                 lesson.setDate(date);
                 lesson.setStartTime(LocalTime.of(9, 0));
                 lesson.setEndTime(LocalTime.of(10, 30));
                 lesson.setTopic("Auto-generated lesson for " + date);
+                lesson.setGroupTeacher(groupTeachers.get(0));
                 lessons.add(lesson);
             }
         }

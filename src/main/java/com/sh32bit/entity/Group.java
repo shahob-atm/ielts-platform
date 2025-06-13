@@ -46,9 +46,6 @@ public class Group {
     @OneToMany(mappedBy = "group")
     private List<GroupTeacher> groupTeachers;
 
-    @OneToMany(mappedBy = "group")
-    private List<Lesson> lessons;
-
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

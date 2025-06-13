@@ -8,5 +8,5 @@ import java.util.List;
 public interface GroupService {
     List<GroupResponse> getGroupsByTeacher(String email);
 
-    GroupMonthlyReportResponse getGroupMonthReport(Long groupId, int year, int month);
+    GroupMonthlyReportResponse getGroupMonthReport(Long groupId, int year, int month, String email);
 }
