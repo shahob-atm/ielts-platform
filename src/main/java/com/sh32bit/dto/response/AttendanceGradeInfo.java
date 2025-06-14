@@ -22,4 +22,5 @@ public class AttendanceGradeInfo {
     private String gradeComment;
     private LocalTime lessonStartTime;
     private LocalTime lessonEndTime;
+    private boolean archived;
 }

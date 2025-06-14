@@ -23,4 +23,6 @@ public class Attendance {
     private boolean present;
 
     private String comment;
+
+    private boolean archived;
 }
