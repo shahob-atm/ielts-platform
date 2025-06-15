@@ -42,7 +42,6 @@ public class JwtUtil {
 
         claims.put("role", authority.getAuthority());
         claims.put("id", id);
-        claims.put("pwd", userDetails.getPassword());
 
         return Jwts.builder()
                 .setClaims(claims)
