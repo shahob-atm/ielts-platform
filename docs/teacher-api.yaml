@@ -594,6 +594,169 @@ paths:
                 data: null
                 timestamp: "2025-06-09T23:55:22"
 
+  /api/v1/grade/{id}/mark:
+    patch:
+      tags:
+        - Grade
+      summary: Mark grade for a student
+      description: Allows a teacher to mark or update a student's grade for a specific attendance
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the grade to update
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GradeMarkRequest'
+            examples:
+              validRequest:
+                summary: Valid request example
+                value:
+                  attendanceId: 1
+                  score: 8.5
+                  gradeComment: "Very attentive and active"
+      responses:
+        '200':
+          description: Grade marked successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: true
+                message: "Successfully marked grade"
+                data:
+                  message: "Successfully marked grade"
+                timestamp: "2025-06-10T00:12:33"
+        '400':
+          description: "Bad Request (Validation error)"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          type: string
+                        nullable: true
+              example:
+                success: false
+                message: "Validation failure"
+                data:
+                  - "attendanceId must not be null"
+                  - "score must not be null"
+                timestamp: "2025-06-10T00:22:14"
+        '401':
+          description: "Unauthorized (Invalid credentials)"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: false
+                message: "Authentication required"
+                data: null
+                timestamp: "2025-06-10T00:02:22"
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: false
+                message: "Teacher Profile Not Found"
+                data: null
+                timestamp: "2025-06-16T15:23:45"
+        '409':
+          description: Conflict / Access denied / Invalid state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: false
+                message: "Attendance is archived"
+                data: null
+                timestamp: "2025-06-16T15:23:45"
+        '500':
+          description: "Internal server error"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: false
+                error: "Internal server error"
+                message: "Server error"
+                data: null
+                timestamp: "2025-06-09T23:55:22"
+
+  /api/v1/teacher-profile/me:
+    get:
+      tags:
+        - Teacher
+      summary: Get teacher profile info
+      description: Get teacher profile info
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: true
+                message: "success"
+                data:
+                  id: 1
+                  firstName: Oybek
+                  lastName: Hamroyev
+                  email: oybek@gamil.com
+                timestamp: "2025-06-10T00:12:33"
+        '401':
+          description: "Unauthorized (Invalid credentials)"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: false
+                message: "Unauthorized (Invalid credentials)"
+                data: null
+                timestamp: "2025-06-10T00:02:22"
+        '404':
+          description: Teacher Profile not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: false
+                message: "Teacher Profile not found"
+                data: null
+                timestamp: "2025-06-16T15:23:45"
+        '500':
+          description: "Internal server error"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: false
+                message: "Internal server error"
+                data: null
+                timestamp: "2025-06-09T23:55:22"
+
 components:
   securitySchemes:
     BearerAuth:
@@ -616,6 +779,26 @@ components:
         - email
         - password
 
+    GradeMarkRequest:
+      type: object
+      required:
+        - attendanceId
+        - score
+      properties:
+        attendanceId:
+          type: integer
+          example: 45
+          description: ID of the attendance this grade is associated with
+        score:
+          type: number
+          format: double
+          example: 9.0
+          description: Grade score (e.g., from 0.0 to 10.0)
+        gradeComment:
+          type: string
+          example: "Well done"
+          description: Optional comment about the student's performance
+
     ActivateRequest:
       type: object
       properties:
@@ -630,6 +813,7 @@ components:
       required:
         - token
         - password
+
     AttendanceMarkRequest:
       type: object
       properties:

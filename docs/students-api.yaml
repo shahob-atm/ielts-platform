@@ -238,7 +238,7 @@ paths:
                   value:
                     success: false
                     error: "Not Found"
-                    message: "child@email.com"
+                    message: "Not found child@email.com"
                     data: null
                     timestamp: "2025-06-09T10:00:00"
                 NotFoundParentProfile:
@@ -277,6 +277,105 @@ paths:
                     data: null
                     timestamp: "2025-06-09T10:00:00"
 
+  /api/v1/students/me/groups:
+    get:
+      tags:
+        - Students
+      summary: Get active groups for logged-in student
+      description: Returns list of groups where the current student is enrolled
+      responses:
+        '200':
+          description: List of groups
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: true
+                message: "Groups found"
+                data:
+                  - id: 1
+                    name: "Group ielts 1"
+                    courseName: "Pre ielts"
+                    startDateTime: "2025-06-09T10:00:00"
+                    endDateTime: "2025-06-09T10:00:00"
+                    status: "ACTIVE"
+                    teacherId: 1
+                    firstName: "Oybek"
+                    lastName: "Hamroyev"
+                    email: "oybek@gmail.com"
+                  - id: 2
+                    name: "Group ielts 2"
+                    courseName: "General ielts"
+                    startDateTime: "2025-06-09T10:00:00"
+                    endDateTime: "2025-06-09T10:00:00"
+                    status: "ACTIVE"
+                    teacherId: 2
+                    firstName: "Unknown"
+                    lastName: "Teacher"
+                    email: "unknown@mail.com"
+        '401':
+          description: "Unauthorized (Invalid credentials)"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: false
+                error: "Unauthorized"
+                message: "Authentication required"
+                data: null
+                timestamp: "2025-06-10T00:02:22"
+        '404':
+          description: "Student profile not found"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              examples:
+                NotFoundStudent:
+                  value:
+                    success: false
+                    error: "Not Found"
+                    message: "Student not found"
+                    data: null
+                    timestamp: "2025-06-09T10:00:00"
+        '409':
+          description: Conflict (invalid/expired token or already linked)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              examples:
+                InvalidToken:
+                  value:
+                    success: false
+                    error: "Conflict"
+                    message: "Invalid token"
+                    data: null
+                    timestamp: "2025-06-09T10:00:00"
+                ExpiredToken:
+                  value:
+                    success: false
+                    error: "Conflict"
+                    message: "Token expired"
+                    data: null
+                    timestamp: "2025-06-09T10:00:00"
+        '500':
+          description: "Internal server error"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: false
+                error: "Internal server error"
+                message: "Server error"
+                data: null
+                timestamp: "2025-06-09T23:55:22"
+
 components:
   securitySchemes:
     BearerAuth:
@@ -290,7 +389,7 @@ components:
         email:
           type: string
           description: User email
-          example: user@example.com
+          example: temur@gmail.com
         password:
           type: string
           description: User password

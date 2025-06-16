@@ -1,14 +1,13 @@
 package com.sh32bit.service.impl;
 
+import com.sh32bit.dto.response.GroupResponse;
 import com.sh32bit.dto.response.MessageResponse;
-import com.sh32bit.entity.LinkToken;
-import com.sh32bit.entity.ParentProfile;
-import com.sh32bit.entity.User;
+import com.sh32bit.entity.*;
+import com.sh32bit.enums.GroupStatus;
 import com.sh32bit.exception.ConflictException;
 import com.sh32bit.exception.NotFoundException;
-import com.sh32bit.repository.LinkTokenRepository;
-import com.sh32bit.repository.ParentProfileRepository;
-import com.sh32bit.repository.UserRepository;
+import com.sh32bit.mapper.GroupMapper;
+import com.sh32bit.repository.*;
 import com.sh32bit.service.StudentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -24,6 +25,9 @@ public class StudentServiceImpl implements StudentService {
     private final UserRepository userRepository;
     private final LinkTokenRepository linkTokenRepository;
     private final ParentProfileRepository parentProfileRepository;
+    private final StudentProfileRepository studentProfileRepository;
+    private final GroupStudentRepository groupStudentRepository;
+    private final GroupTeacherRepository groupTeacherRepository;
 
     @Transactional
     public MessageResponse linkParent(String token, String childEmail) {
@@ -56,5 +60,33 @@ public class StudentServiceImpl implements StudentService {
         log.info("linkToken deleted: {}", linkToken);
 
         return new MessageResponse("Parent linked successfully");
+    }
+
+    @Override
+    public List<GroupResponse> getMyGroups(String email) {
+        StudentProfile studentProfile = studentProfileRepository.findByUserEmail(email)
+                .orElseThrow(() -> new NotFoundException("StudentProfile not found"));
+
+        List<Group> groups = groupStudentRepository.
+                findActiveGroupsByStudentId(studentProfile.getId(), GroupStatus.ACTIVE);
+
+        return groups.stream().map(group -> {
+            Optional<TeacherProfile> teacherOpt = groupTeacherRepository
+                    .findActiveTeacherByGroupId(group.getId());
+
+            TeacherProfile teacher = teacherOpt.orElseGet(() -> {
+                User user = new User();
+                user.setFirstName("Unknown");
+                user.setLastName("Teacher");
+                user.setEmail("unknown@email.com");
+
+                TeacherProfile unknown = new TeacherProfile();
+                unknown.setId(-1L);
+                unknown.setUser(user);
+                return unknown;
+            });
+
+            return GroupMapper.toDTO(group, teacher);
+        }).toList();
     }
 }
