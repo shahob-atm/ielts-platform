@@ -146,7 +146,6 @@ public class GroupServiceImpl implements GroupService {
                 ag.setTopic(lesson.getTopic());
                 ag.setLessonStartTime(lesson.getStartTime());
                 ag.setLessonEndTime(lesson.getEndTime());
-                ag.setArchived(lesson.getDate().isBefore(LocalDate.now()));
 
                 String key = lesson.getId() + "_" + student.getId();
 
@@ -155,6 +154,7 @@ public class GroupServiceImpl implements GroupService {
                     ag.setPresent(attendance.isPresent());
                     ag.setAttendanceComment(attendance.getComment());
                     ag.setAttendanceId(attendance.getId());
+                    ag.setArchived(attendance.isArchived());
                 } else {
                     ag.setPresent(null);
                     ag.setAttendanceComment(null);
