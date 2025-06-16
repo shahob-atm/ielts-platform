@@ -223,10 +223,11 @@ public class DataLoader implements CommandLineRunner {
                         .findFirst();
 
                 if (attendanceOpt.isPresent()) {
-                    Grade grade = new Grade();
-                    grade.setLesson(lesson);
-                    grade.setStudent(student);
+                    Attendance attendance = attendanceOpt.get();
 
+                    Grade grade = new Grade();
+                    grade.setStudent(student);
+                    grade.setAttendance(attendance);
                     double score = 6.0 + (random.nextDouble() * 3.0);
                     grade.setScore(score);
                     grade.setComment("Fake baho: " + String.format("%.1f", score));

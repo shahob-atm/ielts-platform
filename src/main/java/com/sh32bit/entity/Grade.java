@@ -15,7 +15,7 @@ public class Grade {
     private Long id;
 
     @ManyToOne
-    private Lesson lesson;
+    private Attendance attendance;
 
     @ManyToOne
     private StudentProfile student;

@@ -1,32 +1,31 @@
 package com.sh32bit.controller;
 
-import com.sh32bit.dto.request.AttendanceMarkRequest;
+import com.sh32bit.dto.request.GradeMarkRequest;
 import com.sh32bit.dto.response.ApiResponse;
 import com.sh32bit.dto.response.MessageResponse;
-import com.sh32bit.service.AttendanceService;
+import com.sh32bit.service.GradeService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
 
 @RestController
-@RequestMapping("/api/v1/attendance")
+@RequestMapping("/api/v1/grade")
 @RequiredArgsConstructor
-public class AttendanceController {
-    private final AttendanceService attendanceService;
+public class GradeController {
+    private final GradeService gradeService;
 
     @PatchMapping("/{id}/mark")
-    @PreAuthorize("hasRole('TEACHER')")
-    public ResponseEntity<ApiResponse<MessageResponse>> markAttendance(
+    public ResponseEntity<ApiResponse<MessageResponse>> gradeMark(
             @PathVariable(name = "id") Long id,
-            @RequestBody AttendanceMarkRequest attendanceMarkRequest,
+            @Valid @RequestBody GradeMarkRequest request,
             Principal principal
     ) {
         String email = principal.getName();
-        MessageResponse result = attendanceService.markAttendance(id, attendanceMarkRequest, email);
+        MessageResponse result = gradeService.gradeMark(id, request, email);
 
         return ResponseEntity.ok(new ApiResponse<>(
                 true,

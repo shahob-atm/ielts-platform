@@ -117,10 +117,10 @@ public class GroupServiceImpl implements GroupService {
     private Map<String, Grade> getGradeMap(List<Lesson> lessons, List<StudentProfile> students) {
         List<Long> lessonIds = lessons.stream().map(Lesson::getId).toList();
         List<Long> studentIds = students.stream().map(StudentProfile::getId).toList();
-        List<Grade> grades = gradeRepository.findByLessonIdInAndStudentIdIn(lessonIds, studentIds);
+        List<Grade> grades = gradeRepository.findByAttendance_Lesson_IdInAndStudent_IdIn(lessonIds, studentIds);
 
         return grades.stream().collect(Collectors.toMap(
-                g -> g.getLesson().getId() + "_" + g.getStudent().getId(),
+                g -> g.getAttendance().getLesson().getId() + "_" + g.getStudent().getId(),
                 g -> g
         ));
     }

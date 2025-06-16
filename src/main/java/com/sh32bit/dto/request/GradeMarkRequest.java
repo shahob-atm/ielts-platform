@@ -10,9 +10,12 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AttendanceMarkRequest {
-    @NotNull(message = "present must be not null")
-    private boolean present;
+public class GradeMarkRequest {
+    @NotNull(message = "attendanceId must be not null")
+    private Long attendanceId;
 
-    private String comment;
+    @NotNull(message = "score must be not null")
+    private Double score;
+
+    private String gradeComment;
 }
