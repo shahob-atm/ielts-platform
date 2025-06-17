@@ -383,7 +383,7 @@ paths:
     get:
       summary: Get attendances and grades for current student by group
       tags:
-        - Student
+        - Students
       parameters:
         - name: groupId
           in: path
