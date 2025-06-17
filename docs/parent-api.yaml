@@ -5,7 +5,10 @@ info:
   description: REST API for Ielts platform
 
 servers:
+  - url: https://ielts-platform-production.up.railway.app
+    description: Production
   - url: http://localhost:8080
+    description: Local Dev
 
 paths:
   /api/v1/auth/login:
