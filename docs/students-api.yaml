@@ -376,6 +376,96 @@ paths:
                 data: null
                 timestamp: "2025-06-09T23:55:22"
 
+  /api/v1/students/me/groups/{groupId}/attendances:
+    get:
+      summary: Get attendances and grades for current student by group
+      tags:
+        - Student
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          description: Group ID
+          schema:
+            type: integer
+            example: 5
+      responses:
+        '200':
+          description: Successfully fetched attendance and grade data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                    success: true
+                    message: "Attendances found"
+                    data:
+                      - attendanceId: 101
+                        firstName: "Ali"
+                        lastName: "Valiyev"
+                        present: true
+                        comment: "Good"
+                        archived: false
+                        date: "2025-06-15"
+                        topic: "Speaking Practice"
+                        gradeScore: 7.5
+                        gradeComment: "Well done"
+                      - attendanceId: 102
+                        firstName: "Ali"
+                        lastName: "Kamolov"
+                        present: false
+                        comment: "Absent"
+                        archived: false
+                        date: "2025-06-18"
+                        topic: "Writing Task 1"
+                        gradeScore: null
+                        gradeComment: null
+                    timestamp: "2025-06-16T10:00:00"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: false
+                message: "Unauthorized"
+                data: null
+                timestamp: "2025-06-16T10:00:00"
+        '404':
+          description: Student or Group not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: false
+                message: "Student or Group not found"
+                data: null
+                timestamp: "2025-06-16T10:00:00"
+        '403':
+          description: Unauthorized to access this group's data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: false
+                message: "Unauthorized to access this group's data"
+                data: null
+                timestamp: "2025-06-16T10:00:00"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: false
+                message: "Internal server error"
+                data: null
+                timestamp: "2025-06-16T10:00:00"
+
 components:
   securitySchemes:
     BearerAuth:

@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface GradeRepository extends JpaRepository<Grade, Long> {
     List<Grade> findByAttendance_Lesson_IdInAndStudent_IdIn(List<Long> lessonIds, List<Long> studentIds);
+
+    List<Grade> findByAttendanceIdIn(List<Long> attendanceIds);
 }

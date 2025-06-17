@@ -18,6 +18,9 @@ public class Lesson {
     private Long id;
 
     @ManyToOne
+    private Group group;
+
+    @ManyToOne
     private GroupTeacher groupTeacher;
 
     @Column(nullable = false)

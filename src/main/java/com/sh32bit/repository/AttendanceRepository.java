@@ -13,4 +13,12 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
 
     @Query("SELECT a FROM Attendance a WHERE a.lesson.date < :nowDate AND a.archived = false")
     List<Attendance> findOldAttendances(@Param("nowDate") LocalDate nowDate);
+
+    @Query("""
+                SELECT a FROM Attendance a
+                WHERE a.lesson.group.id = :groupId
+                  AND a.student.id = :studentId ORDER BY a.lesson.date ASC
+            """)
+    List<Attendance> findByGroupIdAndStudentId(@Param("groupId") Long groupId,
+                                               @Param("studentId") Long studentId);
 }

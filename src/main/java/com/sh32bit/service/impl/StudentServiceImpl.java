@@ -1,11 +1,13 @@
 package com.sh32bit.service.impl;
 
+import com.sh32bit.dto.response.AttendanceGradeResponse;
 import com.sh32bit.dto.response.GroupResponse;
 import com.sh32bit.dto.response.MessageResponse;
 import com.sh32bit.entity.*;
 import com.sh32bit.enums.GroupStatus;
 import com.sh32bit.exception.ConflictException;
 import com.sh32bit.exception.NotFoundException;
+import com.sh32bit.mapper.AttendanceMapper;
 import com.sh32bit.mapper.GroupMapper;
 import com.sh32bit.repository.*;
 import com.sh32bit.service.StudentService;
@@ -16,7 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -28,6 +32,8 @@ public class StudentServiceImpl implements StudentService {
     private final StudentProfileRepository studentProfileRepository;
     private final GroupStudentRepository groupStudentRepository;
     private final GroupTeacherRepository groupTeacherRepository;
+    private final AttendanceRepository attendanceRepository;
+    private final GradeRepository gradeRepository;
 
     @Transactional
     public MessageResponse linkParent(String token, String childEmail) {
@@ -88,5 +94,32 @@ public class StudentServiceImpl implements StudentService {
 
             return GroupMapper.toDTO(group, teacher);
         }).toList();
+    }
+
+    @Override
+    public List<AttendanceGradeResponse> getStudentAttendances(String email, Long groupId) {
+        StudentProfile studentProfile = studentProfileRepository.findByUserEmail(email)
+                .orElseThrow(() -> new NotFoundException("StudentProfile not found"));
+
+        List<Attendance> attendances = attendanceRepository.findByGroupIdAndStudentId(groupId, studentProfile.getId());
+
+        List<Long> attendanceIds = attendances.stream()
+                .map(Attendance::getId)
+                .toList();
+
+        List<Grade> grades = gradeRepository.findByAttendanceIdIn(attendanceIds);
+
+        Map<Long, Grade> gradeMap = grades.stream()
+                .collect(Collectors.toMap(
+                        g -> g.getAttendance().getId(),
+                        g -> g
+                ));
+
+        return attendances.stream()
+                .map(att -> {
+                    Grade grade = gradeMap.get(att.getId());
+                    return AttendanceMapper.toDTO(att, grade);
+                })
+                .toList();
     }
 }

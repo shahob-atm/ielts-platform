@@ -287,6 +287,7 @@ public class DataLoader implements CommandLineRunner {
                 lesson.setEndTime(LocalTime.of(10, 30));
                 lesson.setTopic("Auto-generated lesson for " + date);
                 lesson.setGroupTeacher(groupTeachers.get(0));
+                lesson.setGroup(group);
                 lessons.add(lesson);
             }
         }
