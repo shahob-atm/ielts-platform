@@ -1,0 +1,53 @@
+spring:
+  application:
+    name: ielts-platform
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${PGHOST}:${PGPORT}/${PGDATABASE}
+    username: ${PGUSER}
+    password: ${PGPASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+
+  mail:
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION}
+  refreshExpiration: ${JWT_REFRESH_EXPIRATION}
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+    resolve-schema-properties: true
+  swagger-ui:
+    path: /swagger-ui.html
+    urls:
+      - url: /docs/admin-api.yaml
+        name: Admin API
+      - url: /docs/students-api.yaml
+        name: Student API
+      - url: /docs/parent-api.yaml
+        name: Parent API
+      - url: /docs/teacher-api.yaml
+        name: Teacher API
+
+server:
+  port: 8080
