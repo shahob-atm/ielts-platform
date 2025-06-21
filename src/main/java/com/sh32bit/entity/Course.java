@@ -22,7 +22,7 @@ public class Course {
 
     private String description;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String level; // e.g. Beginner, Intermediate, Advanced
 
     @Column(nullable = false)

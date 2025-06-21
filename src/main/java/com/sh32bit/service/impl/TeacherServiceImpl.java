@@ -5,7 +5,7 @@ import com.sh32bit.entity.TeacherProfile;
 import com.sh32bit.exception.NotFoundException;
 import com.sh32bit.mapper.TeacherProfileMapper;
 import com.sh32bit.repository.TeacherProfileRepository;
-import com.sh32bit.service.TeacherProfileService;
+import com.sh32bit.service.TeacherService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class TeacherProfileServiceImpl implements TeacherProfileService {
+public class TeacherServiceImpl implements TeacherService {
     private final TeacherProfileRepository teacherProfileRepository;
 
     @Override
