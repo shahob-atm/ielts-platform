@@ -12,8 +12,8 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
-    show-sql: true
+      ddl-auto: ${JPA_HIBERNATE_DDL_AUTO:create}
+    show-sql: ${JPA_SHOW_SQL:true}
 
   mail:
     host: ${MAIL_HOST}
