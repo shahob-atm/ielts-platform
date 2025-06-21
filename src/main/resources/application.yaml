@@ -2,7 +2,7 @@ spring:
   application:
     name: ielts-platform
   profiles:
-    active: dev
+    active: ${SPRING_PROFILES_ACTIVE:dev}
 
   datasource:
     driver-class-name: org.postgresql.Driver
