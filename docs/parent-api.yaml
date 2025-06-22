@@ -456,6 +456,22 @@ paths:
                 message: "Parent not found or parent profile does not exist"
                 data: null
                 timestamp: "2025-06-10T00:44:40"
+        '500':
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        nullable: true
+              example:
+                success: false
+                message: "Unexpected error"
+                data: null
+                timestamp: "2025-06-10T00:40:16"
 
   /api/v1/parents/{childId}/{groupId}/attendances:
     get:
@@ -522,16 +538,14 @@ paths:
                     success: false
                     message: Invalid childId parameter
                     data:
-                      exception: BadRequestException
-                      error: "childId must be not null"
+                      message: "childId must be not null"
                     timestamp: "2024-06-21T10:15:30"
                 invalidGroupId:
                   value:
                     success: false
                     message: Invalid groupId parameter
                     data:
-                      exception: BadRequestException
-                      error: "groupId must be not null"
+                      message: "groupId must be not null"
                     timestamp: "2024-06-21T10:15:30"
         '401':
           description: Unauthorized (no or invalid JWT token)
@@ -544,9 +558,7 @@ paths:
                   value:
                     success: false
                     message: Unauthorized
-                    data:
-                      exception: UnauthorizedException
-                      error: "JWT token is missing or invalid"
+                    data: null
                     timestamp: "2024-06-21T10:15:30"
         '403':
           description: Forbidden (no permission to access this resource)
@@ -559,9 +571,7 @@ paths:
                   value:
                     success: false
                     message: Forbidden
-                    data:
-                      exception: AccessDeniedException
-                      error: "You do not have permission to access this resource"
+                    data: null
                     timestamp: "2024-06-21T10:15:30"
         '404':
           description: Not found (parent, child, or attendance not found)
@@ -573,28 +583,8 @@ paths:
                 parentNotFound:
                   value:
                     success: false
-                    message:
-                      Parent profile not found: parent@gmail.com
-                    data:
-                      exception: NotFoundException
-                      error: "Parent profile not found: parent@gmail.com"
-                    timestamp: "2024-06-21T10:15:30"
-                childNotFound:
-                  value:
-                    success: false
-                    message:
-                      Student profile not found: 44
-                    data:
-                      exception: NotFoundException
-                      error: "Student profile not found: 44"
-                    timestamp: "2024-06-21T10:15:30"
-                notYourChild:
-                  value:
-                    success: false
-                    message: This parent does not have such a child!
-                    data:
-                      exception: NotFoundException
-                      error: "This parent does not have such a child!"
+                    message: Parent profile not found parent@gmail.com
+                    data: null
                     timestamp: "2024-06-21T10:15:30"
         '500':
           description: Internal server error
@@ -607,9 +597,7 @@ paths:
                   value:
                     success: false
                     message: Internal server error
-                    data:
-                      exception: Exception
-                      error: "Unexpected error occurred"
+                    data: null
                     timestamp: "2024-06-21T10:15:30"
 
   /api/v1/parents/{childId}/groups:
@@ -670,9 +658,8 @@ paths:
                   value:
                     success: false
                     message: Invalid childId parameter
-                    result:
-                      exception: BadRequestException
-                      error: "childId must be not null"
+                    data:
+                      message: "childId must be not null"
                     timestamp: "2024-06-21T11:15:30"
         '401':
           description: Unauthorized (no or invalid JWT token)
@@ -685,9 +672,7 @@ paths:
                   value:
                     success: false
                     message: Unauthorized
-                    result:
-                      exception: UnauthorizedException
-                      error: "JWT token is missing or invalid"
+                    data: null
                     timestamp: "2024-06-21T11:15:30"
         '403':
           description: Forbidden (no permission to access this resource)
@@ -700,9 +685,7 @@ paths:
                   value:
                     success: false
                     message: Forbidden
-                    result:
-                      exception: AccessDeniedException
-                      error: "You do not have permission to access this resource"
+                    data: null
                     timestamp: "2024-06-21T11:15:30"
         '404':
           description: Not found (parent, child, or student profile not found)
@@ -714,28 +697,8 @@ paths:
                 parentNotFound:
                   value:
                     success: false
-                    message:
-                      Parent profile not found: parent@gmail.com
-                    result:
-                      exception: NotFoundException
-                      error: "Parent profile not found: parent@gmail.com"
-                    timestamp: "2024-06-21T11:15:30"
-                notYourChild:
-                  value:
-                    success: false
-                    message: This parent does not have such a child!
-                    result:
-                      exception: NotFoundException
-                      error: "This parent does not have such a child!"
-                    timestamp: "2024-06-21T11:15:30"
-                studentProfileNotFound:
-                  value:
-                    success: false
-                    message:
-                      Student profile not found: 44
-                    result:
-                      exception: NotFoundException
-                      error: "Student profile not found: 44"
+                    message: "Parent profile not found parent@gmail.com"
+                    data: null
                     timestamp: "2024-06-21T11:15:30"
         '500':
           description: Internal server error
@@ -748,9 +711,7 @@ paths:
                   value:
                     success: false
                     message: Internal server error
-                    result:
-                      exception: Exception
-                      error: "Unexpected error occurred"
+                    data: null
                     timestamp: "2024-06-21T11:15:30"
 
 components:

@@ -78,13 +78,13 @@ public class ParentServiceImpl implements ParentService {
         ParentProfile parentProfile = parentProfileRepository.findByUserEmail(email)
                 .orElseThrow(() -> new NotFoundException("Parent profile not found: " + email));
 
-        StudentProfile studentProfile = studentProfileRepository.findById(childId)
+        StudentProfile studentProfile = studentProfileRepository.findByUserId(childId)
                 .orElseThrow(() -> new NotFoundException("Student profile not found: " + childId));
 
         User user = studentProfile.getUser();
 
         if (user == null) {
-            throw new NotFoundException("User not found: " + email);
+            throw new NotFoundException("User not found");
         }
 
         Set<User> children = parentProfile.getChildren();
