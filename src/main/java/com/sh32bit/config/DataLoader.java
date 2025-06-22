@@ -6,6 +6,7 @@ import com.sh32bit.enums.Role;
 import com.sh32bit.repository.*;
 import lombok.RequiredArgsConstructor;
 import net.datafaker.Faker;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -35,8 +36,14 @@ public class DataLoader implements CommandLineRunner {
 
     private final Faker faker = new Faker();
 
+    @Value("${spring.jpa.hibernate.ddl-auto:create}")
+    private String ddlAuto;
+
     @Override
     public void run(String... args) {
+        if (!ddlAuto.equals("create")) {
+            return;
+        }
         // 1. Users
         List<User> userList = generateUsers();
         userRepository.saveAll(userList);

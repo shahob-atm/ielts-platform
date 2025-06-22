@@ -457,6 +457,302 @@ paths:
                 data: null
                 timestamp: "2025-06-10T00:44:40"
 
+  /api/v1/parents/{childId}/{groupId}/attendances:
+    get:
+      summary: Get attendances and grades of a child by parent
+      description: Returns the list of attendance and grades for the given child and group, accessible only for parents.
+      tags:
+        - Parents
+      parameters:
+        - name: childId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the child (student)
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the group
+      responses:
+        '200':
+          description: List of attendances and grades for the child
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              examples:
+                success:
+                  value:
+                    success: true
+                    message: success
+                    data:
+                      - attendanceId: 1
+                        firstName: Temur
+                        lastName: G'aniyev
+                        present: true
+                        comment: "Attended"
+                        archived: false
+                        date: "2024-06-17"
+                        topic: "Grammar lesson"
+                        gradeComment: "Good"
+                        gradeScore: 8.5
+                      - attendanceId: 2
+                        firstName: Temur
+                        lastName: G'aniyev
+                        present: false
+                        comment: "Absent"
+                        archived: false
+                        date: "2024-06-19"
+                        topic: "Reading"
+                        gradeComment: "No grade"
+                        gradeScore: null
+                    timestamp: "2024-06-21T10:15:30"
+        '400':
+          description: Invalid input parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              examples:
+                invalidChildId:
+                  value:
+                    success: false
+                    message: Invalid childId parameter
+                    data:
+                      exception: BadRequestException
+                      error: "childId must be not null"
+                    timestamp: "2024-06-21T10:15:30"
+                invalidGroupId:
+                  value:
+                    success: false
+                    message: Invalid groupId parameter
+                    data:
+                      exception: BadRequestException
+                      error: "groupId must be not null"
+                    timestamp: "2024-06-21T10:15:30"
+        '401':
+          description: Unauthorized (no or invalid JWT token)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              examples:
+                unauthorized:
+                  value:
+                    success: false
+                    message: Unauthorized
+                    data:
+                      exception: UnauthorizedException
+                      error: "JWT token is missing or invalid"
+                    timestamp: "2024-06-21T10:15:30"
+        '403':
+          description: Forbidden (no permission to access this resource)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              examples:
+                forbidden:
+                  value:
+                    success: false
+                    message: Forbidden
+                    data:
+                      exception: AccessDeniedException
+                      error: "You do not have permission to access this resource"
+                    timestamp: "2024-06-21T10:15:30"
+        '404':
+          description: Not found (parent, child, or attendance not found)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              examples:
+                parentNotFound:
+                  value:
+                    success: false
+                    message:
+                      Parent profile not found: parent@gmail.com
+                    data:
+                      exception: NotFoundException
+                      error: "Parent profile not found: parent@gmail.com"
+                    timestamp: "2024-06-21T10:15:30"
+                childNotFound:
+                  value:
+                    success: false
+                    message:
+                      Student profile not found: 44
+                    data:
+                      exception: NotFoundException
+                      error: "Student profile not found: 44"
+                    timestamp: "2024-06-21T10:15:30"
+                notYourChild:
+                  value:
+                    success: false
+                    message: This parent does not have such a child!
+                    data:
+                      exception: NotFoundException
+                      error: "This parent does not have such a child!"
+                    timestamp: "2024-06-21T10:15:30"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              examples:
+                serverError:
+                  value:
+                    success: false
+                    message: Internal server error
+                    data:
+                      exception: Exception
+                      error: "Unexpected error occurred"
+                    timestamp: "2024-06-21T10:15:30"
+
+  /api/v1/parents/{childId}/groups:
+    get:
+      summary: Get active groups of a parent's child
+      description: Returns the list of active groups for the given child. Only accessible by a parent.
+      tags:
+        - Parents
+      parameters:
+        - name: childId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the child (student)
+      responses:
+        '200':
+          description: List of active groups for the child
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              examples:
+                success:
+                  value:
+                    success: true
+                    message: success
+                    data:
+                      - id: 10
+                        name: IELTS 6.0 Morning
+                        courseName: IELTS General
+                        startDateTime: "2024-01-20T09:00:00"
+                        endDateTime: "2024-06-20T10:30:00"
+                        status: ACTIVE
+                        teacherId: 14
+                        firstName: Oybek
+                        lastName: Hamroyev
+                        email: oybek@gmail.com
+                      - id: 12
+                        name: Pre-IELTS
+                        courseName: Pre-IELTS
+                        startDateTime: "2024-03-10T08:00:00"
+                        endDateTime: "2024-07-10T09:30:00"
+                        status: ACTIVE
+                        teacherId: 17
+                        firstName: Azizbek
+                        lastName: Ravshanovich
+                        email: azizbek@gmail.com
+                    timestamp: "2024-06-21T11:15:30"
+        '400':
+          description: Invalid input parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              examples:
+                invalidChildId:
+                  value:
+                    success: false
+                    message: Invalid childId parameter
+                    result:
+                      exception: BadRequestException
+                      error: "childId must be not null"
+                    timestamp: "2024-06-21T11:15:30"
+        '401':
+          description: Unauthorized (no or invalid JWT token)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              examples:
+                unauthorized:
+                  value:
+                    success: false
+                    message: Unauthorized
+                    result:
+                      exception: UnauthorizedException
+                      error: "JWT token is missing or invalid"
+                    timestamp: "2024-06-21T11:15:30"
+        '403':
+          description: Forbidden (no permission to access this resource)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              examples:
+                forbidden:
+                  value:
+                    success: false
+                    message: Forbidden
+                    result:
+                      exception: AccessDeniedException
+                      error: "You do not have permission to access this resource"
+                    timestamp: "2024-06-21T11:15:30"
+        '404':
+          description: Not found (parent, child, or student profile not found)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              examples:
+                parentNotFound:
+                  value:
+                    success: false
+                    message:
+                      Parent profile not found: parent@gmail.com
+                    result:
+                      exception: NotFoundException
+                      error: "Parent profile not found: parent@gmail.com"
+                    timestamp: "2024-06-21T11:15:30"
+                notYourChild:
+                  value:
+                    success: false
+                    message: This parent does not have such a child!
+                    result:
+                      exception: NotFoundException
+                      error: "This parent does not have such a child!"
+                    timestamp: "2024-06-21T11:15:30"
+                studentProfileNotFound:
+                  value:
+                    success: false
+                    message:
+                      Student profile not found: 44
+                    result:
+                      exception: NotFoundException
+                      error: "Student profile not found: 44"
+                    timestamp: "2024-06-21T11:15:30"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              examples:
+                serverError:
+                  value:
+                    success: false
+                    message: Internal server error
+                    result:
+                      exception: Exception
+                      error: "Unexpected error occurred"
+                    timestamp: "2024-06-21T11:15:30"
+
 components:
   securitySchemes:
     BearerAuth:

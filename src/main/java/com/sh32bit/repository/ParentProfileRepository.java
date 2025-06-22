@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface ParentProfileRepository extends JpaRepository<ParentProfile, Long> {
     Optional<ParentProfile> findByUserId(Long user_id);
+    Optional<ParentProfile> findByUserEmail(String email);
 }
