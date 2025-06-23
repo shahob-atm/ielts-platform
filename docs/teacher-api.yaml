@@ -760,6 +760,63 @@ paths:
                 data: null
                 timestamp: "2025-06-09T23:55:22"
 
+  /api/v1/device:
+    get:
+      summary: Get User-Agent header (device info)
+      description: Returns the User-Agent header string sent by the client. Can be used to identify device or browser.
+      tags:
+        - Device
+      parameters:
+        - name: User-Agent
+          in: header
+          required: true
+          schema:
+            type: string
+            example: User-Agent
+          description: The User-Agent header containing device/browser info
+      responses:
+        '200':
+          description: The User-Agent string sent by the client
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
+        '400':
+          description: Bad request (missing User-Agent header)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "User-Agent header is missing"
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: "2024-06-21T11:38:00"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Internal server error"
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: "2024-06-21T11:38:00"
+
 components:
   securitySchemes:
     BearerAuth:
